@@ -1,6 +1,6 @@
 import api from "./api";
 
-const BASE = "/properties";
+const BASE = "/property";
 
 // ==================== CREATE ====================
 export const createProperty = async (propertyData) => {

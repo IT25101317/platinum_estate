@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/properties")
+@RequestMapping("/api/property")
 @CrossOrigin(origins = "http://localhost:5173")
 public class PropertyController {
 
