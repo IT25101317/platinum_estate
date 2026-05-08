@@ -1,14 +1,14 @@
+// src/services/api.js
+
 import axios from 'axios';
 
-// Base axios instance pointing to Spring Boot backend
 const api = axios.create({
-    baseURL: 'api',
+    baseURL: 'http://localhost:8080/api',  // ← fix this line
     headers: {
         'Content-Type': 'application/json',
     },
 });
 
-// Request interceptor — attach JWT token if present
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
@@ -20,7 +20,6 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// Response interceptor — handle global errors
 api.interceptors.response.use(
     (response) => response,
     (error) => {

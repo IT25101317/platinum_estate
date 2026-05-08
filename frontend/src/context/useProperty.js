@@ -4,26 +4,26 @@ import {
   createProperty,
   updateProperty,
   deleteProperty,
+  toggleAvailability,
   searchProperties,
   getPropertiesByType,
-  toggleAvailability,
 } from "../services/propertyService";
 
 const useProperty = () => {
   const [properties, setProperties] = useState([]);
+  const [allProperties, setAllProperties] = useState([]); // master list for client-side filtering
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedProperty, setSelectedProperty] = useState(null);
 
-  const clearError = () => setError(null);
-
-  // Fetch all
+  // ── Fetch all on mount ──
   const fetchProperties = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const data = await getAllProperties();
       setProperties(data);
+      setAllProperties(data);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to load properties.");
     } finally {
@@ -35,14 +35,14 @@ const useProperty = () => {
     fetchProperties();
   }, [fetchProperties]);
 
-  // Create
-  const addProperty = async (propertyData) => {
+  // ── CREATE ──
+  const addProperty = async (formData) => {
     setLoading(true);
     setError(null);
     try {
-      const created = await createProperty(propertyData);
+      const created = await createProperty(formData);
       setProperties((prev) => [created, ...prev]);
-      return created;
+      setAllProperties((prev) => [created, ...prev]);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to create property.");
       throw err;
@@ -51,16 +51,14 @@ const useProperty = () => {
     }
   };
 
-  // Update
-  const editProperty = async (id, propertyData) => {
+  // ── UPDATE ──
+  const editProperty = async (id, formData) => {
     setLoading(true);
     setError(null);
     try {
-      const updated = await updateProperty(id, propertyData);
-      setProperties((prev) =>
-        prev.map((p) => (p.id === id ? updated : p))
-      );
-      return updated;
+      const updated = await updateProperty(id, formData);
+      setProperties((prev) => prev.map((p) => (p.id === id ? updated : p)));
+      setAllProperties((prev) => prev.map((p) => (p.id === id ? updated : p)));
     } catch (err) {
       setError(err.response?.data?.message || "Failed to update property.");
       throw err;
@@ -69,66 +67,60 @@ const useProperty = () => {
     }
   };
 
-  // Toggle availability
-  const toggleProperty = async (id) => {
-    try {
-      const updated = await toggleAvailability(id);
-      setProperties((prev) =>
-        prev.map((p) => (p.id === id ? updated : p))
-      );
-    } catch (err) {
-      setError("Failed to toggle availability.");
-    }
-  };
-
-  // Delete
+  // ── DELETE ──
   const removeProperty = async (id) => {
     setLoading(true);
     setError(null);
     try {
       await deleteProperty(id);
       setProperties((prev) => prev.filter((p) => p.id !== id));
+      setAllProperties((prev) => prev.filter((p) => p.id !== id));
     } catch (err) {
       setError(err.response?.data?.message || "Failed to delete property.");
-      throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  // Search
-  const handleSearch = async (keyword) => {
+  // ── TOGGLE AVAILABILITY ──
+  const toggleProperty = async (id) => {
+    setError(null);
+    try {
+      const updated = await toggleAvailability(id);
+      setProperties((prev) => prev.map((p) => (p.id === id ? updated : p)));
+      setAllProperties((prev) => prev.map((p) => (p.id === id ? updated : p)));
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to toggle availability.");
+    }
+  };
+
+  // ── SEARCH (client-side) ──
+  const handleSearch = (keyword) => {
     if (!keyword.trim()) {
-      fetchProperties();
+      setProperties(allProperties);
       return;
     }
-    setLoading(true);
-    try {
-      const data = await searchProperties(keyword);
-      setProperties(data);
-    } catch (err) {
-      setError("Search failed.");
-    } finally {
-      setLoading(false);
-    }
+    const lower = keyword.toLowerCase();
+    setProperties(
+      allProperties.filter(
+        (p) =>
+          p.title?.toLowerCase().includes(lower) ||
+          p.location?.toLowerCase().includes(lower) ||
+          p.description?.toLowerCase().includes(lower)
+      )
+    );
   };
 
-  // Filter by type
-  const filterByType = async (type) => {
-    if (!type || type === "ALL") {
-      fetchProperties();
+  // ── FILTER BY TYPE (client-side) ──
+  const filterByType = (type) => {
+    if (type === "ALL") {
+      setProperties(allProperties);
       return;
     }
-    setLoading(true);
-    try {
-      const data = await getPropertiesByType(type);
-      setProperties(data);
-    } catch (err) {
-      setError("Filter failed.");
-    } finally {
-      setLoading(false);
-    }
+    setProperties(allProperties.filter((p) => p.propertyType === type));
   };
+
+  const clearError = () => setError(null);
 
   return {
     properties,
@@ -137,13 +129,13 @@ const useProperty = () => {
     selectedProperty,
     setSelectedProperty,
     clearError,
-    fetchProperties,
     addProperty,
     editProperty,
     removeProperty,
     toggleProperty,
     handleSearch,
     filterByType,
+    refetch: fetchProperties,
   };
 };
 

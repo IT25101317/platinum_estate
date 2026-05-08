@@ -1,4 +1,4 @@
-package com.everglow.backend.property;
+package com.real_estate_web.backend.property;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

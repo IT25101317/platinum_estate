@@ -112,21 +112,31 @@ export default function Home() {
       {/* ── Navbar ── */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white shadow-md py-3' : 'bg-transparent py-5'}`}>
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2">
             <div className="w-8 h-8 bg-amber-500 rounded-sm flex items-center justify-center">
               <span className="text-white text-xs font-bold">PE</span>
             </div>
             <span className={`font-display text-xl font-600 tracking-wide ${scrolled ? 'text-stone-800' : 'text-white'}`}>
               Platinum Estate
             </span>
-          </div>
+          </Link>
           <div className="hidden md:flex items-center gap-8">
-            {['Home', 'Properties', 'About', 'Contact'].map(item => (
-              <a key={item} href="#"
-                className={`text-sm font-medium tracking-wide transition-colors ${scrolled ? 'text-stone-600 hover:text-amber-600' : 'text-white/90 hover:text-white'}`}>
-                {item}
-              </a>
-            ))}
+            <Link to="/"
+              className={`text-sm font-medium tracking-wide transition-colors ${scrolled ? 'text-stone-600 hover:text-amber-600' : 'text-white/90 hover:text-white'}`}>
+              Home
+            </Link>
+            <Link to="/property"
+              className={`text-sm font-medium tracking-wide transition-colors ${scrolled ? 'text-stone-600 hover:text-amber-600' : 'text-white/90 hover:text-white'}`}>
+              Properties
+            </Link>
+            <a href="#about"
+              className={`text-sm font-medium tracking-wide transition-colors ${scrolled ? 'text-stone-600 hover:text-amber-600' : 'text-white/90 hover:text-white'}`}>
+              About
+            </a>
+            <a href="#contact"
+              className={`text-sm font-medium tracking-wide transition-colors ${scrolled ? 'text-stone-600 hover:text-amber-600' : 'text-white/90 hover:text-white'}`}>
+              Contact
+            </a>
           </div>
           <div className="flex items-center gap-3">
             <button className="text-sm font-medium px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition-colors">
@@ -168,9 +178,11 @@ export default function Home() {
                 <option key={t}>{t}</option>
               ))}
             </select>
-            <button className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium rounded-xl transition-colors whitespace-nowrap">
-              Search Properties
-            </button>
+            <Link to="/property">
+              <button className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium rounded-xl transition-colors whitespace-nowrap">
+                Search Properties
+              </button>
+            </Link>
           </div>
 
           {/* Quick filters */}
@@ -210,9 +222,10 @@ export default function Home() {
             <p className="text-amber-600 text-sm font-medium tracking-widest uppercase mb-2">Handpicked for You</p>
             <h2 className="font-display text-stone-800 text-4xl md:text-5xl font-semibold">Featured Properties</h2>
           </div>
-          <button className="hidden md:flex items-center gap-2 text-sm text-stone-500 hover:text-amber-600 transition-colors border-b border-stone-300 hover:border-amber-500 pb-0.5">
+          <Link to="/property"
+            className="hidden md:flex items-center gap-2 text-sm text-stone-500 hover:text-amber-600 transition-colors border-b border-stone-300 hover:border-amber-500 pb-0.5">
             View All Properties →
-          </button>
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -239,9 +252,11 @@ export default function Home() {
                 </div>
                 <div className="flex items-center justify-between">
                   <p className="font-display text-amber-600 text-xl font-semibold">{p.price}</p>
-                  <button className="text-xs px-4 py-2 rounded-lg bg-stone-900 hover:bg-amber-500 text-white transition-colors">
-                    View Details
-                  </button>
+                  <Link to="/property">
+                    <button className="text-xs px-4 py-2 rounded-lg bg-stone-900 hover:bg-amber-500 text-white transition-colors">
+                      View Details
+                    </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -283,9 +298,11 @@ export default function Home() {
             Whether you're buying, selling, or renting — our expert agents are here to guide you every step of the way.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button className="px-8 py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-xl transition-colors">
-              Browse Properties
-            </button>
+            <Link to="/property">
+              <button className="px-8 py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-xl transition-colors">
+                Browse Properties
+              </button>
+            </Link>
             <button className="px-8 py-3.5 border border-white/30 hover:border-white text-white font-medium rounded-xl transition-colors">
               Contact an Agent
             </button>

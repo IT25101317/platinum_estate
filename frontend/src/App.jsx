@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import UserManagement from './pages/users/UserManagement'
-import PropertyPage from "./pages/property/PropertyPage";
+import PropertyListing from "./pages/property/PropertyListing";  // ← new public page
+import PropertyPage from "./pages/property/PropertyPage";         // ← keep as admin page
 
 export default function App() {
   return (
@@ -9,7 +10,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/users" element={<UserManagement />} />
-        <Route path="/property" element={<PropertyPage />} />
+        <Route path="/property" element={<PropertyListing />} />        {/* public */}
+        <Route path="/admin/property" element={<PropertyPage />} />     {/* admin */}
       </Routes>
     </BrowserRouter>
   )
