@@ -7,47 +7,33 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * BookingService - Business logic layer.
- *
- * OOP principles applied:
- *  - Encapsulation : all business rules are hidden inside this service
- *  - Abstraction   : controller only sees high-level methods
- *  - Single Responsibility: each method does exactly one thing
- */
 @Service
 @Transactional
 public class BookingService {
 
     private final BookingRepository bookingRepository;
 
-    // Constructor injection (best practice over @Autowired)
     public BookingService(BookingRepository bookingRepository) {
         this.bookingRepository = bookingRepository;
     }
 
     // ─── CREATE ───────────────────────────────────────────────────────────────
 
-    /**
-     * Create a new booking after validating dates and checking for conflicts.
-     */
     public BookingDTO createBooking(BookingDTO dto) {
         validateBookingDates(dto);
-        checkForOverlappingBookings(dto.getPropertyId(),
+        checkForOverlappingBookings(
+            dto.getPropertyId(),
             LocalDate.parse(dto.getCheckInDate()),
             LocalDate.parse(dto.getCheckOutDate()),
-            null);
-
+            null
+        );
         Booking booking = mapToEntity(dto);
         Booking saved   = bookingRepository.save(booking);
         return BookingDTO.fromEntity(saved);
     }
 
-    // ─── READ (All) ───────────────────────────────────────────────────────────
+    // ─── READ ─────────────────────────────────────────────────────────────────
 
-    /**
-     * Retrieve all bookings in the system.
-     */
     @Transactional(readOnly = true)
     public List<BookingDTO> getAllBookings() {
         return bookingRepository.findAll()
@@ -56,22 +42,11 @@ public class BookingService {
             .collect(Collectors.toList());
     }
 
-    // ─── READ (Single) ────────────────────────────────────────────────────────
-
-    /**
-     * Retrieve a single booking by ID.
-     */
     @Transactional(readOnly = true)
     public BookingDTO getBookingById(Long id) {
-        Booking booking = findBookingOrThrow(id);
-        return BookingDTO.fromEntity(booking);
+        return BookingDTO.fromEntity(findBookingOrThrow(id));
     }
 
-    // ─── READ (By User) ───────────────────────────────────────────────────────
-
-    /**
-     * Retrieve all bookings belonging to a specific user.
-     */
     @Transactional(readOnly = true)
     public List<BookingDTO> getBookingsByUser(Long userId) {
         return bookingRepository.findByUserId(userId)
@@ -80,11 +55,6 @@ public class BookingService {
             .collect(Collectors.toList());
     }
 
-    // ─── READ (By Property) ───────────────────────────────────────────────────
-
-    /**
-     * Retrieve all bookings for a specific property.
-     */
     @Transactional(readOnly = true)
     public List<BookingDTO> getBookingsByProperty(Long propertyId) {
         return bookingRepository.findByPropertyId(propertyId)
@@ -95,19 +65,17 @@ public class BookingService {
 
     // ─── UPDATE ───────────────────────────────────────────────────────────────
 
-    /**
-     * Update an existing booking's details.
-     */
     public BookingDTO updateBooking(Long id, BookingDTO dto) {
         Booking existing = findBookingOrThrow(id);
 
         validateBookingDates(dto);
-        checkForOverlappingBookings(dto.getPropertyId(),
+        checkForOverlappingBookings(
+            dto.getPropertyId(),
             LocalDate.parse(dto.getCheckInDate()),
             LocalDate.parse(dto.getCheckOutDate()),
-            id);
+            id
+        );
 
-        // Update fields (encapsulated via setters)
         existing.setPropertyId(dto.getPropertyId());
         existing.setUserId(dto.getUserId());
         existing.setUserName(dto.getUserName());
@@ -123,15 +91,9 @@ public class BookingService {
             existing.setStatus(Booking.BookingStatus.valueOf(dto.getStatus()));
         }
 
-        Booking updated = bookingRepository.save(existing);
-        return BookingDTO.fromEntity(updated);
+        return BookingDTO.fromEntity(bookingRepository.save(existing));
     }
 
-    // ─── UPDATE STATUS only ───────────────────────────────────────────────────
-
-    /**
-     * Update only the status of a booking (confirm, cancel, complete).
-     */
     public BookingDTO updateBookingStatus(Long id, String status) {
         Booking booking = findBookingOrThrow(id);
         try {
@@ -145,36 +107,33 @@ public class BookingService {
 
     // ─── DELETE ───────────────────────────────────────────────────────────────
 
-    /**
-     * Delete a booking permanently by ID.
-     */
     public void deleteBooking(Long id) {
-        findBookingOrThrow(id); // ensures it exists before deleting
+        findBookingOrThrow(id);
         bookingRepository.deleteById(id);
     }
 
-    // ─── Private helper methods (Encapsulation) ───────────────────────────────
+    // ─── PRIVATE HELPERS ──────────────────────────────────────────────────────
 
-    /** Find booking or throw a clear error */
     private Booking findBookingOrThrow(Long id) {
         return bookingRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Booking not found with id: " + id));
+            .orElseThrow(() -> new BookingNotFoundException(
+                "Booking not found with id: " + id));
     }
 
-    /** Validate check-in is before check-out and both are not in the past */
     private void validateBookingDates(BookingDTO dto) {
         LocalDate checkIn  = LocalDate.parse(dto.getCheckInDate());
         LocalDate checkOut = LocalDate.parse(dto.getCheckOutDate());
 
         if (!checkIn.isBefore(checkOut)) {
-            throw new RuntimeException("Check-in date must be before check-out date.");
+            throw new IllegalArgumentException(
+                "Check-in date must be before check-out date.");
         }
         if (checkIn.isBefore(LocalDate.now())) {
-            throw new RuntimeException("Check-in date cannot be in the past.");
+            throw new IllegalArgumentException(
+                "Check-in date cannot be in the past.");
         }
     }
 
-    /** Prevent double bookings on same property for overlapping dates */
     private void checkForOverlappingBookings(Long propertyId,
                                               LocalDate checkIn,
                                               LocalDate checkOut,
@@ -182,7 +141,6 @@ public class BookingService {
         List<Booking> overlapping = bookingRepository
             .findOverlappingBookings(propertyId, checkIn, checkOut);
 
-        // On update, exclude the current booking from the overlap check
         if (excludeBookingId != null) {
             overlapping = overlapping.stream()
                 .filter(b -> !b.getId().equals(excludeBookingId))
@@ -190,12 +148,11 @@ public class BookingService {
         }
 
         if (!overlapping.isEmpty()) {
-            throw new RuntimeException(
+            throw new IllegalStateException(
                 "Property is already booked for the selected dates.");
         }
     }
 
-    /** Map DTO to a new Booking entity */
     private Booking mapToEntity(BookingDTO dto) {
         return new Booking(
             dto.getPropertyId(),
@@ -209,5 +166,11 @@ public class BookingService {
             dto.getTotalPrice(),
             dto.getNotes()
         );
+    }
+
+    // ─── Custom exception ─────────────────────────────────────────────────────
+
+    public static class BookingNotFoundException extends RuntimeException {
+        public BookingNotFoundException(String message) { super(message); }
     }
 }

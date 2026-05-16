@@ -1,7 +1,8 @@
-package com.everglow.backend.config;
+package com.real_estate_web.backend.config;
 
-import com.everglow.backend.payments.PaymentServiceImpl.PaymentNotFoundException;
-import com.everglow.backend.payments.PaymentServiceImpl.PaymentAlreadyExistsException;
+import com.real_estate_web.backend.payment.PaymentServiceImpl.PaymentNotFoundException;
+import com.real_estate_web.backend.payment.PaymentServiceImpl.PaymentAlreadyExistsException;
+import com.real_estate_web.backend.booking.BookingService.BookingNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -13,10 +14,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Global exception handler — converts all exceptions into clean JSON responses.
- * Add all module exceptions here as the project grows.
- */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -30,9 +27,19 @@ public class GlobalExceptionHandler {
         return buildError(HttpStatus.CONFLICT, ex.getMessage());
     }
 
+    @ExceptionHandler(BookingNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleBookingNotFound(BookingNotFoundException ex) {
+        return buildError(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleBadArg(IllegalArgumentException ex) {
         return buildError(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<Map<String, Object>> handleBadState(IllegalStateException ex) {
+        return buildError(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
