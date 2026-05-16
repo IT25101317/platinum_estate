@@ -1,4 +1,4 @@
-package com.everglow.backend.bookings;
+package com.real_estate_web.backend.booking;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

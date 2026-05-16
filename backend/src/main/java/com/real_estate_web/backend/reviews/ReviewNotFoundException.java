@@ -1,4 +1,4 @@
-package com.everglow.backend.reviews;
+package com.real_estate_web.backend.reviews;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

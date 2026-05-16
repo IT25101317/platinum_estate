@@ -1,4 +1,4 @@
-package com.everglow.backend.bookings;
+package com.real_estate_web.backend.booking;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

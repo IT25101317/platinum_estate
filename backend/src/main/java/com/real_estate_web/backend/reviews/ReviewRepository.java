@@ -1,4 +1,4 @@
-package com.everglow.backend.reviews;
+package com.real_estate_web.backend.reviews;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

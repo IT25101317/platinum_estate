@@ -1,4 +1,4 @@
-package com.everglow.backend.payments;
+package com.real_estate_web.backend.payment;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

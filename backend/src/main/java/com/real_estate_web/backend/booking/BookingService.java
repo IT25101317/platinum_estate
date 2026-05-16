@@ -1,4 +1,4 @@
-package com.everglow.backend.bookings;
+package com.real_estate_web.backend.booking;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

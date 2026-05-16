@@ -1,4 +1,4 @@
-package com.everglow.backend.reviews;
+package com.real_estate_web.backend.reviews;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
