@@ -136,7 +136,6 @@ export default function Home() {
         .font-display { font-family: 'Playfair Display', serif; }
         .font-body   { font-family: 'Outfit', sans-serif; }
 
-        /* ── Noise grain overlay ── */
         .grain::before {
           content: '';
           position: fixed; inset: 0; z-index: 9999;
@@ -145,7 +144,6 @@ export default function Home() {
           opacity: 0.4;
         }
 
-        /* ── Hero ── */
         .hero-bg {
           background-image:
             linear-gradient(to bottom, rgba(10,10,15,0.5) 0%, rgba(10,10,15,0.2) 40%, rgba(10,10,15,0.85) 100%),
@@ -154,7 +152,6 @@ export default function Home() {
           background-position: center;
         }
 
-        /* ── Glow cursor orb ── */
         .cursor-glow {
           position: fixed;
           width: 600px; height: 600px;
@@ -166,14 +163,12 @@ export default function Home() {
           transition: left 0.4s ease, top 0.4s ease;
         }
 
-        /* ── Navbar ── */
         .nav-glass {
           backdrop-filter: blur(20px) saturate(180%);
           background: rgba(10,10,15,0.8);
           border-bottom: 1px solid rgba(245,158,11,0.1);
         }
 
-        /* ── Nav link underline ── */
         .nav-link {
           position: relative;
           color: rgba(232,224,208,0.7);
@@ -194,7 +189,6 @@ export default function Home() {
         .nav-link:hover { color: #f59e0b; }
         .nav-link:hover::after { width: 100%; }
 
-        /* ── Animated headline ── */
         @keyframes heroFadeUp {
           from { opacity: 0; transform: translateY(32px) skewY(1deg); }
           to   { opacity: 1; transform: translateY(0) skewY(0deg); }
@@ -205,7 +199,6 @@ export default function Home() {
         .h4 { animation: heroFadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.55s both; }
         .h5 { animation: heroFadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.7s both; }
 
-        /* ── Search bar ── */
         .search-bar {
           background: rgba(18,18,26,0.95);
           border: 1px solid rgba(245,158,11,0.2);
@@ -228,7 +221,6 @@ export default function Home() {
         }
         .search-select option { background: #12121a; }
 
-        /* ── City pill ── */
         .city-pill {
           border: 1px solid rgba(245,158,11,0.2);
           color: rgba(232,224,208,0.6);
@@ -243,7 +235,6 @@ export default function Home() {
           color: #f59e0b;
         }
 
-        /* ── Stats section ── */
         .stat-card {
           border-left: 1px solid rgba(245,158,11,0.12);
           transition: border-color 0.3s;
@@ -251,7 +242,6 @@ export default function Home() {
         .stat-card:first-child { border-left: none; }
         .stat-card:hover { border-color: rgba(245,158,11,0.4); }
 
-        /* ── Property cards ── */
         .prop-card {
           background: rgba(18,18,26,0.9);
           border: 1px solid rgba(245,158,11,0.08);
@@ -269,7 +259,6 @@ export default function Home() {
         }
         .prop-card:hover .img-wrap img { transform: scale(1.08); }
 
-        /* ── Golden shimmer line ── */
         @keyframes shimmer {
           0%   { background-position: -200% center; }
           100% { background-position: 200% center; }
@@ -283,7 +272,6 @@ export default function Home() {
           animation: shimmer 4s linear infinite;
         }
 
-        /* ── Service cards ── */
         .svc-card {
           background: rgba(15,15,22,0.95);
           border: 1px solid rgba(245,158,11,0.06);
@@ -310,20 +298,17 @@ export default function Home() {
           transform: scale(1.1) rotate(-3deg);
         }
 
-        /* ── Scroll indicator ── */
         @keyframes bounce {
           0%, 100% { transform: translateY(0); opacity: 0.5; }
           50%       { transform: translateY(6px); opacity: 1; }
         }
         .scroll-dot { animation: bounce 1.8s ease-in-out infinite; }
 
-        /* ── Gold divider ── */
         .gold-line {
           height: 1px;
           background: linear-gradient(to right, transparent, rgba(245,158,11,0.4), transparent);
         }
 
-        /* ── Floating orbs ── */
         @keyframes floatOrb {
           0%, 100% { transform: translateY(0) translateX(0); }
           33%  { transform: translateY(-20px) translateX(10px); }
@@ -332,7 +317,6 @@ export default function Home() {
         .orb { animation: floatOrb 8s ease-in-out infinite; pointer-events: none; }
         .orb2 { animation: floatOrb 11s ease-in-out 2s infinite; }
 
-        /* ── CTA section ── */
         .cta-bg {
           background-image:
             linear-gradient(135deg, rgba(10,10,15,0.92) 0%, rgba(10,10,15,0.7) 50%, rgba(10,10,15,0.92) 100%),
@@ -340,18 +324,10 @@ export default function Home() {
           background-size: cover; background-position: center;
         }
 
-        /* ── Number counter animate ── */
-        @keyframes countUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ── Footer ── */
         .footer-bg { background: rgba(6,6,10,0.98); border-top: 1px solid rgba(245,158,11,0.08); }
         .footer-link { color: rgba(232,224,208,0.4); font-size: 0.85rem; text-decoration: none; transition: color 0.2s; }
         .footer-link:hover { color: #f59e0b; }
 
-        /* ── Button variants ── */
         .btn-gold {
           background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
           color: #0a0a0f; font-weight: 600;
@@ -380,7 +356,6 @@ export default function Home() {
           box-shadow: 0 0 20px rgba(245,158,11,0.1);
         }
 
-        /* ── Tag badge pulse ── */
         @keyframes pulse-ring {
           0%   { box-shadow: 0 0 0 0 rgba(245,158,11,0.4); }
           70%  { box-shadow: 0 0 0 6px rgba(245,158,11,0); }
@@ -388,7 +363,6 @@ export default function Home() {
         }
         .tag-pulse { animation: pulse-ring 2.5s ease-out infinite; }
 
-        /* ── Section reveal ── */
         .section-label {
           font-family: 'Outfit', sans-serif;
           font-size: 0.72rem; letter-spacing: 0.3em;
@@ -432,8 +406,15 @@ export default function Home() {
             </span>
           </Link>
 
+          {/* ── Nav Links — Booking added here ── */}
           <div className="hidden md:flex items-center gap-8">
-            {[['/', 'Home'], ['/property', 'Properties'], ['/about', 'About'], ['/contact', 'Contact']].map(([to, label]) => (
+            {[
+              ['/',          'Home'],
+              ['/property',  'Properties'],
+              ['/booking',   'Booking'],
+              ['/about',     'About'],
+              ['/contact',   'Contact'],
+            ].map(([to, label]) => (
               <Link key={to} to={to} className="nav-link font-body">{label}</Link>
             ))}
           </div>
@@ -453,7 +434,6 @@ export default function Home() {
 
       {/* ── Hero ── */}
       <section className="hero-bg relative overflow-hidden" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        {/* Parallax-blurred orbs */}
         <div className="orb" style={{
           position: 'absolute', top: '20%', left: '10%',
           width: 400, height: 400, borderRadius: '50%',
@@ -467,7 +447,6 @@ export default function Home() {
           filter: 'blur(30px)',
         }} />
 
-        {/* Parallax hero image shift */}
         <div style={{
           position: 'absolute', inset: 0,
           transform: `translateY(${scrollY * 0.3}px)`,
@@ -605,15 +584,12 @@ export default function Home() {
                   onMouseEnter={() => setHoveredCard(p.id)}
                   onMouseLeave={() => setHoveredCard(null)}
                 >
-                  {/* Image */}
                   <div className="img-wrap" style={{ position: 'relative', height: 230, overflow: 'hidden' }}>
                     <img src={p.img} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                    {/* Dark gradient over image */}
                     <div style={{
                       position: 'absolute', inset: 0,
                       background: 'linear-gradient(to top, rgba(10,10,15,0.7) 0%, transparent 60%)',
                     }} />
-                    {/* Tag */}
                     <span className={`${TAG_STYLES[p.tag].bg} tag-pulse font-body`} style={{
                       position: 'absolute', top: 16, left: 16,
                       fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.08em',
@@ -633,14 +609,12 @@ export default function Home() {
                     </span>
                   </div>
 
-                  {/* Content */}
                   <div style={{ padding: '22px 24px 24px' }}>
                     <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 600, color: '#f0e8d8', margin: '0 0 6px' }}>{p.title}</h3>
                     <p className="font-body" style={{ color: 'rgba(232,224,208,0.4)', fontSize: '0.82rem', margin: '0 0 18px', display: 'flex', alignItems: 'center', gap: 4 }}>
                       <span style={{ color: '#f59e0b' }}>📍</span>{p.location}
                     </p>
 
-                    {/* Specs */}
                     <div className="font-body" style={{
                       display: 'flex', gap: 16, fontSize: '0.78rem', color: 'rgba(232,224,208,0.5)',
                       borderTop: '1px solid rgba(245,158,11,0.08)', paddingTop: 16, marginBottom: 20,
@@ -696,7 +670,6 @@ export default function Home() {
 
       {/* ── CTA Banner ── */}
       <section className="cta-bg" style={{ padding: '120px 24px', position: 'relative', overflow: 'hidden' }}>
-        {/* Decorative ring */}
         <div style={{
           position: 'absolute', top: '50%', left: '50%',
           transform: 'translate(-50%, -50%)',
