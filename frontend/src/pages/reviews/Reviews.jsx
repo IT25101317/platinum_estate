@@ -2,11 +2,10 @@
 // Full Reviews page: list, create, edit, delete — wired to Spring Boot backend
 
 import { useState, useEffect, useCallback } from "react";
-import ReviewCard from "../../components/ReviewCard";
-import ReviewForm from "../../components/ReviewForm";
-import StarRating from "../../components/StarRating";
+import ReviewCard from "./ReviewCard";
+import ReviewForm from "./ReviewForm";
+import StarRating from "./StarRating";
 import {
-  getAllReviews,
   getReviewsByProperty,
   createReview,
   updateReview,
@@ -28,11 +27,11 @@ export default function Reviews() {
   const [toast, setToast]               = useState(null);
 
   const [showForm, setShowForm]         = useState(false);
-  const [editTarget, setEditTarget]     = useState(null);   // ReviewDTO | null
+  const [editTarget, setEditTarget]     = useState(null);
 
-  const [filterRating, setFilterRating] = useState(0);      // 0 = all
+  const [filterRating, setFilterRating] = useState(0);
   const [sortOrder, setSortOrder]       = useState("newest");
-  const [deleteConfirm, setDeleteConfirm] = useState(null); // id | null
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   const propertyId = DEMO_PROPERTY_ID;
   const userId     = DEMO_USER_ID;
@@ -200,7 +199,6 @@ export default function Reviews() {
         {/* Stats Banner */}
         {!loading && !error && (
           <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 mb-8 flex flex-col sm:flex-row items-center gap-6">
-            {/* Big rating number */}
             <div className="text-center">
               <p className="text-6xl font-black text-teal-500 leading-none">
                 {Number(stats.averageRating).toFixed(1)}
@@ -215,7 +213,6 @@ export default function Reviews() {
                 {stats.totalReviews === 1 ? "review" : "reviews"}
               </p>
 
-              {/* Rating breakdown bar */}
               {[5, 4, 3, 2, 1].map((star) => {
                 const count = reviews.filter((r) => r.rating === star).length;
                 const pct = stats.totalReviews > 0 ? (count / stats.totalReviews) * 100 : 0;
@@ -240,7 +237,6 @@ export default function Reviews() {
         {/* Filter + Sort Row */}
         {!loading && !error && reviews.length > 0 && (
           <div className="flex flex-wrap gap-3 mb-6">
-            {/* Filter chips */}
             <div className="flex gap-2 flex-wrap">
               {[0, 5, 4, 3, 2, 1].map((star) => (
                 <button
@@ -257,7 +253,6 @@ export default function Reviews() {
               ))}
             </div>
 
-            {/* Sort select */}
             <select
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value)}

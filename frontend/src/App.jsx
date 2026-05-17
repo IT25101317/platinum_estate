@@ -8,6 +8,7 @@ import AdminManagement from './pages/admin/AdminManagement'
 import PropertyListing from './pages/property/PropertyListing'
 import PropertyPage from './pages/property/PropertyPage'
 import BookingManagement from './pages/booking/BookingManagement'
+import Reviews from './pages/reviews/Reviews'
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
         <Route path="/property" element={<PropertyListing />} />
         <Route path="/admin/property" element={<PropertyPage />} />
         <Route path="/booking" element={<BookingManagement />} />
+        <Route path="/reviews" element={<Reviews />} />
       </Routes>
     </BrowserRouter>
   )

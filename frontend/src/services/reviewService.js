@@ -1,7 +1,7 @@
-// frontend/src/services/bookingService.js
-// Handles all HTTP communication with the Spring Boot booking API
+// frontend/src/services/reviewService.js
+// Handles all HTTP communication with the Spring Boot reviews API
 
-const BASE_URL = 'http://localhost:8080/api/bookings'
+const BASE_URL = 'http://localhost:8080/api/reviews'
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
 
@@ -15,85 +15,94 @@ async function handleResponse(res) {
 
 // ─── CREATE ───────────────────────────────────────────────────────────────────
 
-export async function createBooking(bookingData) {
+/**
+ * POST /api/reviews
+ * @param {{ reviewerName, comment, rating, propertyId, userId }} reviewData
+ */
+export async function createReview(reviewData) {
   const res = await fetch(BASE_URL, {
     method:  'POST',
     headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify(bookingData),
+    body:    JSON.stringify(reviewData),
   })
   return handleResponse(res)
 }
 
 // ─── READ ALL ─────────────────────────────────────────────────────────────────
 
-export async function getAllBookings() {
+/**
+ * GET /api/reviews
+ */
+export async function getAllReviews() {
   const res = await fetch(BASE_URL)
   return handleResponse(res)
 }
 
 // ─── READ ONE ─────────────────────────────────────────────────────────────────
 
-export async function getBookingById(id) {
+/**
+ * GET /api/reviews/{id}
+ */
+export async function getReviewById(id) {
   const res = await fetch(`${BASE_URL}/${id}`)
-  return handleResponse(res)
-}
-
-// ─── READ BY USER ─────────────────────────────────────────────────────────────
-
-export async function getBookingsByUser(userId) {
-  const res = await fetch(`${BASE_URL}/user/${userId}`)
   return handleResponse(res)
 }
 
 // ─── READ BY PROPERTY ────────────────────────────────────────────────────────
 
-export async function getBookingsByProperty(propertyId) {
+/**
+ * GET /api/reviews/property/{propertyId}
+ */
+export async function getReviewsByProperty(propertyId) {
   const res = await fetch(`${BASE_URL}/property/${propertyId}`)
+  return handleResponse(res)
+}
+
+// ─── READ BY USER ─────────────────────────────────────────────────────────────
+
+/**
+ * GET /api/reviews/user/{userId}
+ */
+export async function getReviewsByUser(userId) {
+  const res = await fetch(`${BASE_URL}/user/${userId}`)
+  return handleResponse(res)
+}
+
+// ─── PROPERTY STATS ───────────────────────────────────────────────────────────
+
+/**
+ * GET /api/reviews/property/{propertyId}/stats
+ * Returns { averageRating, totalReviews }
+ */
+export async function getPropertyReviewStats(propertyId) {
+  const res = await fetch(`${BASE_URL}/property/${propertyId}/stats`)
   return handleResponse(res)
 }
 
 // ─── UPDATE ───────────────────────────────────────────────────────────────────
 
-export async function updateBooking(id, bookingData) {
+/**
+ * PUT /api/reviews/{id}
+ * @param {number} id
+ * @param {{ reviewerName, comment, rating }} reviewData
+ */
+export async function updateReview(id, reviewData) {
   const res = await fetch(`${BASE_URL}/${id}`, {
     method:  'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify(bookingData),
-  })
-  return handleResponse(res)
-}
-
-// ─── UPDATE STATUS ────────────────────────────────────────────────────────────
-
-export async function updateBookingStatus(id, status) {
-  const res = await fetch(`${BASE_URL}/${id}/status`, {
-    method:  'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify({ status }),
+    body:    JSON.stringify(reviewData),
   })
   return handleResponse(res)
 }
 
 // ─── DELETE ───────────────────────────────────────────────────────────────────
 
-export async function deleteBooking(id) {
+/**
+ * DELETE /api/reviews/{id}
+ */
+export async function deleteReview(id) {
   const res = await fetch(`${BASE_URL}/${id}`, {
     method: 'DELETE',
   })
   return handleResponse(res)
 }
-
-// ─── DEFAULT EXPORT ───────────────────────────────────────────────────────────
-
-const bookingService = {
-  createBooking,
-  getAllBookings,
-  getBookingById,
-  getBookingsByUser,
-  getBookingsByProperty,
-  updateBooking,
-  updateBookingStatus,
-  deleteBooking,
-}
-
-export default bookingService

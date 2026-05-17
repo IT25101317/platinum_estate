@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import { getReviewsByProperty, getPropertyReviewStats } from '../services/reviewService'
 
 const FEATURED = [
   {
@@ -36,9 +37,9 @@ const FEATURED = [
 
 const STATS = [
   { value: '1,200+', label: 'Properties Listed' },
-  { value: '840+', label: 'Happy Clients' },
-  { value: '15+', label: 'Years Experience' },
-  { value: '98%', label: 'Satisfaction Rate' },
+  { value: '840+',   label: 'Happy Clients' },
+  { value: '15+',    label: 'Years Experience' },
+  { value: '98%',    label: 'Satisfaction Rate' },
 ]
 
 const SERVICES = [
@@ -69,9 +70,9 @@ const SERVICES = [
 ]
 
 const TAG_STYLES = {
-  Featured: { bg: 'bg-amber-500', dot: '#f59e0b' },
-  New:      { bg: 'bg-emerald-500', dot: '#10b981' },
-  'Hot Deal': { bg: 'bg-rose-500', dot: '#f43f5e' },
+  Featured:  { bg: 'bg-amber-500',   dot: '#f59e0b' },
+  New:       { bg: 'bg-emerald-500', dot: '#10b981' },
+  'Hot Deal':{ bg: 'bg-rose-500',    dot: '#f43f5e' },
 }
 
 function useInView(threshold = 0.15) {
@@ -99,6 +100,204 @@ function AnimatedSection({ children, className = '', delay = 0 }) {
     >
       {children}
     </div>
+  )
+}
+
+// ── Mini Star Rating (read-only) ──────────────────────────────────────────────
+function MiniStars({ value }) {
+  return (
+    <div style={{ display: 'flex', gap: 2 }}>
+      {[1,2,3,4,5].map(s => (
+        <span key={s} style={{ color: s <= value ? '#f59e0b' : 'rgba(245,158,11,0.2)', fontSize: '0.85rem' }}>★</span>
+      ))}
+    </div>
+  )
+}
+
+// ── Reviews Section ───────────────────────────────────────────────────────────
+function ReviewsSection() {
+  const [reviews, setReviews] = useState([])
+  const [stats, setStats]     = useState({ averageRating: 0, totalReviews: 0 })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const [data, statsData] = await Promise.all([
+          getReviewsByProperty(1),
+          getPropertyReviewStats(1),
+        ])
+        setReviews(data.slice(0, 3)) // show latest 3
+        setStats(statsData)
+      } catch {
+        // silently fail on home page
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
+  }, [])
+
+  const initials = (name = '') =>
+    name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '?'
+
+  const formatDate = (iso) => iso
+    ? new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+    : ''
+
+  return (
+    <section style={{ background: '#0a0a0f', padding: '100px 24px' }}>
+      <div className="max-w-6xl mx-auto">
+
+        {/* Header */}
+        <AnimatedSection>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, marginBottom: 56 }}>
+            <div>
+              <p className="section-label" style={{ marginBottom: 14 }}>What Our Clients Say</p>
+              <h2 className="font-display" style={{ fontSize: 'clamp(2rem, 5vw, 3.2rem)', fontWeight: 600, color: '#f0e8d8', margin: 0 }}>
+                Client Reviews
+              </h2>
+            </div>
+            <Link to="/reviews" className="font-body" style={{
+              color: 'rgba(245,158,11,0.7)', fontSize: '0.85rem', textDecoration: 'none',
+              borderBottom: '1px solid rgba(245,158,11,0.3)', paddingBottom: 2,
+            }}>
+              View All Reviews →
+            </Link>
+          </div>
+        </AnimatedSection>
+
+        {/* Stats Banner */}
+        {!loading && stats.totalReviews > 0 && (
+          <AnimatedSection>
+            <div style={{
+              background: 'rgba(18,18,26,0.9)',
+              border: '1px solid rgba(245,158,11,0.12)',
+              borderRadius: 20, padding: '28px 36px',
+              display: 'flex', alignItems: 'center', gap: 32,
+              marginBottom: 40, flexWrap: 'wrap',
+            }}>
+              <div style={{ textAlign: 'center' }}>
+                <p className="font-display shimmer-text" style={{ fontSize: '3.5rem', fontWeight: 700, lineHeight: 1, margin: 0 }}>
+                  {Number(stats.averageRating).toFixed(1)}
+                </p>
+                <p className="font-body" style={{ color: 'rgba(232,224,208,0.35)', fontSize: '0.7rem', letterSpacing: '0.2em', textTransform: 'uppercase', marginTop: 4 }}>
+                  out of 5
+                </p>
+              </div>
+              <div>
+                <MiniStars value={Math.round(stats.averageRating)} />
+                <p className="font-body" style={{ color: 'rgba(232,224,208,0.45)', fontSize: '0.85rem', marginTop: 6 }}>
+                  Based on <strong style={{ color: '#f0e8d8' }}>{stats.totalReviews}</strong> {stats.totalReviews === 1 ? 'review' : 'reviews'}
+                </p>
+              </div>
+            </div>
+          </AnimatedSection>
+        )}
+
+        {/* Loading */}
+        {loading && (
+          <div style={{ textAlign: 'center', padding: '40px 0', color: 'rgba(232,224,208,0.3)' }}>
+            <div style={{
+              width: 32, height: 32, borderRadius: '50%',
+              border: '3px solid rgba(245,158,11,0.2)',
+              borderTopColor: '#f59e0b',
+              animation: 'spin 0.8s linear infinite',
+              margin: '0 auto 12px',
+            }} />
+            <p className="font-body" style={{ fontSize: '0.85rem' }}>Loading reviews…</p>
+          </div>
+        )}
+
+        {/* Empty state */}
+        {!loading && reviews.length === 0 && (
+          <div style={{
+            background: 'rgba(18,18,26,0.9)',
+            border: '1px solid rgba(245,158,11,0.08)',
+            borderRadius: 20, padding: '60px 24px', textAlign: 'center',
+          }}>
+            <p style={{ fontSize: '2.5rem', marginBottom: 12 }}>💬</p>
+            <p className="font-body" style={{ color: 'rgba(232,224,208,0.4)', fontSize: '0.9rem' }}>No reviews yet. Be the first!</p>
+            <Link to="/reviews">
+              <button className="btn-gold font-body" style={{ marginTop: 20, padding: '10px 28px', fontSize: '0.85rem', borderRadius: 10 }}>
+                Write a Review
+              </button>
+            </Link>
+          </div>
+        )}
+
+        {/* Review Cards */}
+        {!loading && reviews.length > 0 && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
+            {reviews.map((review, i) => (
+              <AnimatedSection key={review.id} delay={i * 100}>
+                <div style={{
+                  background: 'rgba(18,18,26,0.9)',
+                  border: '1px solid rgba(245,158,11,0.08)',
+                  borderRadius: 20, padding: '24px',
+                  height: '100%',
+                  transition: 'border-color 0.3s, transform 0.3s',
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(245,158,11,0.25)'; e.currentTarget.style.transform = 'translateY(-4px)' }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(245,158,11,0.08)'; e.currentTarget.style.transform = 'translateY(0)' }}
+                >
+                  {/* Reviewer */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                    <div style={{
+                      width: 42, height: 42, borderRadius: '50%',
+                      background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: '#0a0a0f', fontWeight: 700, fontSize: '0.85rem',
+                      fontFamily: 'Outfit', flexShrink: 0,
+                    }}>
+                      {initials(review.reviewerName)}
+                    </div>
+                    <div>
+                      <p className="font-body" style={{ color: '#f0e8d8', fontWeight: 500, fontSize: '0.92rem', margin: 0 }}>
+                        {review.reviewerName}
+                      </p>
+                      <p className="font-body" style={{ color: 'rgba(232,224,208,0.3)', fontSize: '0.75rem', margin: 0 }}>
+                        {formatDate(review.createdAt)}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Stars */}
+                  <MiniStars value={review.rating} />
+
+                  {/* Comment */}
+                  <p className="font-body" style={{
+                    color: 'rgba(232,224,208,0.55)', fontSize: '0.875rem',
+                    lineHeight: 1.75, marginTop: 12, marginBottom: 0,
+                    display: '-webkit-box', WebkitLineClamp: 4,
+                    WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                  }}>
+                    "{review.comment}"
+                  </p>
+                </div>
+              </AnimatedSection>
+            ))}
+          </div>
+        )}
+
+        {/* See All button */}
+        {!loading && reviews.length > 0 && (
+          <AnimatedSection>
+            <div style={{ textAlign: 'center', marginTop: 48 }}>
+              <Link to="/reviews" style={{ textDecoration: 'none' }}>
+                <button className="btn-outline font-body" style={{ padding: '13px 40px', fontSize: '0.88rem', borderRadius: 12 }}>
+                  See All Reviews
+                </button>
+              </Link>
+            </div>
+          </AnimatedSection>
+        )}
+      </div>
+
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+      `}</style>
+    </section>
   )
 }
 
@@ -374,6 +573,11 @@ export default function Home() {
           content: ''; flex: 0 0 30px; height: 1px;
           background: rgba(245,158,11,0.4);
         }
+
+        @keyframes pulse-dot {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50%       { opacity: 0.4; transform: scale(0.6); }
+        }
       `}</style>
 
       {/* Cursor glow */}
@@ -392,28 +596,88 @@ export default function Home() {
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3" style={{ textDecoration: 'none' }}>
-            <div style={{
-              width: 36, height: 36,
-              background: 'linear-gradient(135deg, #f59e0b, #d97706)',
-              borderRadius: 8,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 4px 15px rgba(245,158,11,0.3)',
-            }}>
-              <span style={{ color: '#0a0a0f', fontSize: '0.7rem', fontWeight: 800, fontFamily: 'Outfit' }}>PE</span>
+            {/* Diamond icon mark */}
+            <div style={{ position: 'relative', width: 48, height: 48, flexShrink: 0 }}>
+              {/* Outer diamond */}
+              <div style={{
+                position: 'absolute', inset: 0,
+                background: 'linear-gradient(135deg, #c0c0c0 0%, #808080 40%, #c8c8c8 60%, #a0a0a0 100%)',
+                transform: 'rotate(45deg)',
+                borderRadius: 6,
+                boxShadow: '0 0 16px rgba(192,192,192,0.25), inset 0 1px 1px rgba(255,255,255,0.3)',
+              }} />
+              {/* Inner diamond */}
+              <div style={{
+                position: 'absolute', inset: 6,
+                background: 'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%)',
+                transform: 'rotate(45deg)',
+                borderRadius: 3,
+                border: '1px solid rgba(192,192,192,0.3)',
+              }} />
+              {/* House roof lines */}
+              <div style={{
+                position: 'absolute', inset: 0,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+                  {/* Roof */}
+                  <polyline points="4,14 13,6 22,14" stroke="url(#silver)" strokeWidth="2" strokeLinejoin="round" fill="none"/>
+                  {/* House body */}
+                  <rect x="7" y="14" width="12" height="8" stroke="url(#silver)" strokeWidth="1.5" fill="none"/>
+                  {/* Door */}
+                  <rect x="10.5" y="17" width="5" height="5" stroke="url(#silver)" strokeWidth="1" fill="none"/>
+                  {/* P letter overlay */}
+                  <text x="11" y="13" fontFamily="serif" fontSize="7" fontWeight="bold" fill="url(#silver2)">P</text>
+                  <defs>
+                    <linearGradient id="silver" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#e8e8e8"/>
+                      <stop offset="50%" stopColor="#a0a0a0"/>
+                      <stop offset="100%" stopColor="#d0d0d0"/>
+                    </linearGradient>
+                    <linearGradient id="silver2" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#ffffff"/>
+                      <stop offset="100%" stopColor="#909090"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
             </div>
-            <span className="font-display" style={{ color: '#e8e0d0', fontSize: '1.2rem', fontWeight: 600, letterSpacing: '0.02em' }}>
-              Platinum Estate
-            </span>
+
+            {/* Wordmark */}
+            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
+              <span style={{
+                fontFamily: 'Playfair Display, serif',
+                fontSize: '1.15rem', fontWeight: 700,
+                letterSpacing: '0.12em', textTransform: 'uppercase',
+                background: 'linear-gradient(180deg, #e8e8e8 0%, #a0a0a0 50%, #d0d0d0 100%)',
+                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}>Platinum</span>
+              <span style={{
+                fontFamily: 'Outfit, sans-serif',
+                fontSize: '0.62rem', fontWeight: 400,
+                letterSpacing: '0.38em', textTransform: 'uppercase',
+                background: 'linear-gradient(90deg, #c0c0c0, #e8e8e8, #a0a0a0)',
+                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text', marginTop: 3,
+              }}>Estates</span>
+              <span style={{
+                fontFamily: 'Outfit, sans-serif',
+                fontSize: '0.48rem', fontWeight: 300,
+                letterSpacing: '0.22em', textTransform: 'uppercase',
+                color: 'rgba(192,192,192,0.45)', marginTop: 2,
+              }}>Premium Property Portal</span>
+            </div>
           </Link>
 
-          {/* ── Nav Links — Booking added here ── */}
           <div className="hidden md:flex items-center gap-8">
             {[
-              ['/',          'Home'],
-              ['/property',  'Properties'],
-              ['/booking',   'Booking'],
-              ['/about',     'About'],
-              ['/contact',   'Contact'],
+              ['/',         'Home'],
+              ['/property', 'Properties'],
+              ['/booking',  'Booking'],
+              ['/reviews',  'Reviews'],
+              ['/about',    'About'],
+              ['/contact',  'Contact'],
             ].map(([to, label]) => (
               <Link key={to} to={to} className="nav-link font-body">{label}</Link>
             ))}
@@ -542,7 +806,7 @@ export default function Home() {
           <div className="max-w-5xl mx-auto" style={{
             display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
           }}>
-            {STATS.map((s, i) => (
+            {STATS.map((s) => (
               <div key={s.label} className="stat-card" style={{ textAlign: 'center', padding: '20px 24px' }}>
                 <p className="font-display shimmer-text" style={{ fontSize: '2.8rem', fontWeight: 700, marginBottom: 6 }}>{s.value}</p>
                 <p className="font-body" style={{ color: 'rgba(232,224,208,0.4)', fontSize: '0.82rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{s.label}</p>
@@ -568,7 +832,6 @@ export default function Home() {
               <Link to="/property" className="font-body" style={{
                 color: 'rgba(245,158,11,0.7)', fontSize: '0.85rem', textDecoration: 'none',
                 borderBottom: '1px solid rgba(245,158,11,0.3)', paddingBottom: 2,
-                transition: 'color 0.2s',
               }}>
                 View All Properties →
               </Link>
@@ -668,6 +931,13 @@ export default function Home() {
         </div>
       </section>
 
+      <div className="gold-line" />
+
+      {/* ── Reviews Section ── */}
+      <ReviewsSection />
+
+      <div className="gold-line" />
+
       {/* ── CTA Banner ── */}
       <section className="cta-bg" style={{ padding: '120px 24px', position: 'relative', overflow: 'hidden' }}>
         <div style={{
@@ -724,23 +994,49 @@ export default function Home() {
         }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-              <div style={{
-                width: 32, height: 32,
-                background: 'linear-gradient(135deg, #f59e0b, #d97706)',
-                borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <span style={{ color: '#0a0a0f', fontSize: '0.65rem', fontWeight: 800, fontFamily: 'Outfit' }}>PE</span>
+              {/* Mini diamond icon */}
+              <div style={{ position: 'relative', width: 36, height: 36, flexShrink: 0 }}>
+                <div style={{
+                  position: 'absolute', inset: 0,
+                  background: 'linear-gradient(135deg, #c0c0c0 0%, #808080 40%, #c8c8c8 60%, #a0a0a0 100%)',
+                  transform: 'rotate(45deg)', borderRadius: 5,
+                  boxShadow: '0 0 10px rgba(192,192,192,0.2)',
+                }} />
+                <div style={{
+                  position: 'absolute', inset: 5,
+                  background: 'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%)',
+                  transform: 'rotate(45deg)', borderRadius: 2,
+                }} />
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{
+                    fontFamily: 'serif', fontSize: '0.75rem', fontWeight: 900,
+                    background: 'linear-gradient(135deg, #e8e8e8, #a0a0a0)',
+                    WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                  }}>PE</span>
+                </div>
               </div>
-              <span className="font-display" style={{ color: '#f0e8d8', fontSize: '1.05rem' }}>Platinum Estate</span>
+              <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
+                <span style={{
+                  fontFamily: 'Playfair Display, serif', fontSize: '1rem', fontWeight: 700,
+                  letterSpacing: '0.1em', textTransform: 'uppercase',
+                  background: 'linear-gradient(180deg, #e8e8e8 0%, #a0a0a0 100%)',
+                  WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                }}>Platinum</span>
+                <span style={{
+                  fontFamily: 'Outfit, sans-serif', fontSize: '0.55rem', fontWeight: 300,
+                  letterSpacing: '0.35em', textTransform: 'uppercase',
+                  color: 'rgba(192,192,192,0.5)', marginTop: 2,
+                }}>Estates</span>
+              </div>
             </div>
             <p className="font-body" style={{ color: 'rgba(232,224,208,0.3)', fontSize: '0.84rem', lineHeight: 1.8, margin: 0 }}>
               Sri Lanka's most trusted real estate portal connecting buyers, sellers, and agents.
             </p>
           </div>
           {[
-            { title: 'Quick Links', links: ['Home', 'Properties', 'Agents', 'Blog'] },
+            { title: 'Quick Links',    links: ['Home', 'Properties', 'Agents', 'Blog'] },
             { title: 'Property Types', links: ['Apartments', 'Villas', 'Houses', 'Land'] },
-            { title: 'Contact', links: ['Colombo, Sri Lanka', '+94 11 234 5678', 'info@platinumestate.lk'] },
+            { title: 'Contact',        links: ['Colombo, Sri Lanka', '+94 11 234 5678', 'info@platinumestate.lk'] },
           ].map(col => (
             <div key={col.title}>
               <h4 className="font-body" style={{ color: '#f0e8d8', fontSize: '0.82rem', fontWeight: 500, letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 18 }}>{col.title}</h4>
