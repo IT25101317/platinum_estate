@@ -31,13 +31,6 @@ export default function PropertyListing() {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeType, setActiveType] = useState("ALL");
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   useEffect(() => {
     fetchAll();
@@ -48,7 +41,6 @@ export default function PropertyListing() {
     setError(null);
     try {
       const data = await getAllProperties();
-      // Only show available properties to public
       const available = data.filter((p) => p.available);
       setAllProperties(available);
       setProperties(available);
@@ -98,29 +90,8 @@ export default function PropertyListing() {
         .img-zoom:hover img { transform: scale(1.05); }
       `}</style>
 
-      {/* ── Navbar ── */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white shadow-md py-3" : "bg-white shadow-sm py-4"}`}>
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-amber-500 rounded-sm flex items-center justify-center">
-              <span className="text-white text-xs font-bold">PE</span>
-            </div>
-            <span className="font-display text-xl tracking-wide text-stone-800">Platinum Estate</span>
-          </Link>
-          <div className="hidden md:flex items-center gap-8">
-            <Link to="/" className="text-sm font-medium text-stone-600 hover:text-amber-600 transition-colors">Home</Link>
-            <Link to="/property" className="text-sm font-medium text-amber-600 border-b-2 border-amber-500 pb-0.5">Properties</Link>
-            <a href="#" className="text-sm font-medium text-stone-600 hover:text-amber-600 transition-colors">About</a>
-            <a href="#" className="text-sm font-medium text-stone-600 hover:text-amber-600 transition-colors">Contact</a>
-          </div>
-          <button className="text-sm font-medium px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition-colors">
-            List Property
-          </button>
-        </div>
-      </nav>
-
       {/* ── Page Header ── */}
-      <section className="pt-24 pb-10 px-6 bg-stone-900">
+      <section className="pt-36 pb-10 px-6 bg-stone-900">
         <div className="max-w-7xl mx-auto text-center">
           <p className="text-amber-400 text-sm font-medium tracking-widest uppercase mb-2">Browse Listings</p>
           <h1 className="font-display text-white text-4xl md:text-5xl font-semibold mb-4">Available Properties</h1>
@@ -145,8 +116,8 @@ export default function PropertyListing() {
       </section>
 
       {/* ── Filters ── */}
-      <section className="sticky top-16 z-40 bg-white border-b border-stone-100 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center gap-2 overflow-x-auto scrollbar-hide">
+      <section className="sticky top-20 z-40 bg-white border-b border-stone-100 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center gap-2 overflow-x-auto">
           {PROPERTY_TYPES.map((type) => (
             <button
               key={type}
@@ -168,8 +139,6 @@ export default function PropertyListing() {
 
       {/* ── Main Content ── */}
       <main className="max-w-7xl mx-auto px-6 py-12">
-
-        {/* Loading */}
         {loading && (
           <div className="text-center py-24">
             <div className="inline-block w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mb-4"></div>
@@ -177,7 +146,6 @@ export default function PropertyListing() {
           </div>
         )}
 
-        {/* Error */}
         {error && (
           <div className="text-center py-24">
             <div className="text-5xl mb-4">⚠️</div>
@@ -188,7 +156,6 @@ export default function PropertyListing() {
           </div>
         )}
 
-        {/* Empty */}
         {!loading && !error && properties.length === 0 && (
           <div className="text-center py-24">
             <div className="text-6xl mb-4">🏗️</div>
@@ -203,7 +170,6 @@ export default function PropertyListing() {
           </div>
         )}
 
-        {/* Property Grid */}
         {!loading && !error && properties.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {properties.map((property) => (
@@ -229,14 +195,12 @@ export default function PropertyListing() {
   );
 }
 
-// ── Public Property Card ──
 function PublicPropertyCard({ property }) {
   const { title, description, location, price, propertyType,
           bedrooms, bathrooms, areaSqFt, imageUrl } = property;
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden card-hover border border-stone-100 flex flex-col">
-      {/* Image */}
       <div className="relative overflow-hidden h-52 img-zoom bg-gradient-to-br from-stone-100 to-stone-200">
         {imageUrl ? (
           <img src={imageUrl} alt={title} className="w-full h-full object-cover" />
@@ -245,13 +209,11 @@ function PublicPropertyCard({ property }) {
             <span className="text-6xl opacity-20">🏠</span>
           </div>
         )}
-        {/* Type Badge */}
         <span className={`absolute top-3 left-3 text-xs font-semibold px-2.5 py-1 rounded-full ${TYPE_COLORS[propertyType] || "bg-gray-100 text-gray-600"}`}>
           {propertyType}
         </span>
       </div>
 
-      {/* Content */}
       <div className="p-5 flex flex-col flex-1">
         <h3 className="font-display text-stone-800 text-lg font-semibold leading-tight mb-1 line-clamp-1">{title}</h3>
         <p className="text-stone-400 text-xs mb-3 flex items-center gap-1">
@@ -259,14 +221,12 @@ function PublicPropertyCard({ property }) {
         </p>
         <p className="text-stone-400 text-xs line-clamp-2 mb-4 leading-relaxed">{description}</p>
 
-        {/* Stats */}
         <div className="flex items-center gap-3 text-stone-500 text-xs mb-4 border-t border-stone-100 pt-3">
           {bedrooms > 0 && <span>🛏 {bedrooms} Beds</span>}
           {bathrooms > 0 && <span>🚿 {bathrooms} Baths</span>}
           {areaSqFt > 0 && <span>📐 {areaSqFt} sqft</span>}
         </div>
 
-        {/* Price + CTA */}
         <div className="mt-auto flex items-center justify-between">
           <p className="font-display text-amber-600 text-lg font-semibold">{formatPrice(price)}</p>
           <button className="text-xs px-4 py-2 rounded-lg bg-stone-900 hover:bg-amber-500 text-white transition-colors">

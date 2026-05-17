@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
 const TEAM = [
@@ -38,19 +37,11 @@ const STATS = [
 const VALUES = [
   { icon: '🤝', title: 'Trust', desc: 'We build lasting relationships through transparency and honest communication with every client.' },
   { icon: '🏆', title: 'Excellence', desc: 'We deliver premium service and curated listings that meet the highest standards of quality.' },
-  { icon: '🌍', title: 'Local Expertise', desc: 'Deep knowledge of Sri Lanka\'s property market gives our clients a decisive advantage.' },
+  { icon: '🌍', title: 'Local Expertise', desc: "Deep knowledge of Sri Lanka's property market gives our clients a decisive advantage." },
   { icon: '💡', title: 'Innovation', desc: 'We leverage modern technology to make property search and transactions seamless.' },
 ]
 
 export default function About() {
-  const [scrolled, setScrolled] = useState(false)
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40)
-    window.addEventListener('scroll', onScroll)
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
   return (
     <div className="min-h-screen bg-stone-50 font-sans">
       <style>{`
@@ -61,30 +52,9 @@ export default function About() {
         .card-hover:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.12); }
       `}</style>
 
-      {/* ── Navbar ── */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white shadow-md py-3' : 'bg-white shadow-sm py-4'}`}>
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-amber-500 rounded-sm flex items-center justify-center">
-              <span className="text-white text-xs font-bold">PE</span>
-            </div>
-            <span className="font-display text-xl tracking-wide text-stone-800">Platinum Estate</span>
-          </Link>
-          <div className="hidden md:flex items-center gap-8">
-            <Link to="/" className="text-sm font-medium text-stone-600 hover:text-amber-600 transition-colors">Home</Link>
-            <Link to="/property" className="text-sm font-medium text-stone-600 hover:text-amber-600 transition-colors">Properties</Link>
-            <Link to="/about" className="text-sm font-medium text-amber-600 border-b-2 border-amber-500 pb-0.5">About</Link>
-            <Link to="/contact" className="text-sm font-medium text-stone-600 hover:text-amber-600 transition-colors">Contact</Link>
-          </div>
-          <button className="text-sm font-medium px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition-colors">
-            List Property
-          </button>
-        </div>
-      </nav>
-
       {/* ── Hero Banner ── */}
       <section
-        className="pt-32 pb-20 px-6 relative"
+        className="pt-36 pb-20 px-6 relative"
         style={{
           backgroundImage: `linear-gradient(to right, rgba(10,10,10,0.80), rgba(10,10,10,0.4)), url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&q=80')`,
           backgroundSize: 'cover',
@@ -176,11 +146,8 @@ export default function About() {
             {TEAM.map(member => (
               <div key={member.name} className="text-center card-hover">
                 <div className="relative mb-4 inline-block">
-                  <img
-                    src={member.img}
-                    alt={member.name}
-                    className="w-32 h-32 rounded-full object-cover mx-auto border-4 border-amber-100 shadow-md"
-                  />
+                  <img src={member.img} alt={member.name}
+                    className="w-32 h-32 rounded-full object-cover mx-auto border-4 border-amber-100 shadow-md" />
                 </div>
                 <h3 className="font-display text-stone-800 text-xl font-semibold">{member.name}</h3>
                 <p className="text-amber-600 text-xs font-medium tracking-wide uppercase mb-2">{member.role}</p>

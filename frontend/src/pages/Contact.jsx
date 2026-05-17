@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 const CONTACT_INFO = [
@@ -25,17 +25,10 @@ const CONTACT_INFO = [
 ]
 
 export default function Contact() {
-  const [scrolled, setScrolled] = useState(false)
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', subject: '', message: '' })
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40)
-    window.addEventListener('scroll', onScroll)
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -102,20 +95,6 @@ export default function Contact() {
           transform: translateY(-2px);
         }
 
-        .nav-link {
-          position: relative;
-          padding-bottom: 2px;
-        }
-        .nav-link::after {
-          content: '';
-          position: absolute;
-          bottom: 0; left: 0;
-          width: 0; height: 1px;
-          background: #f59e0b;
-          transition: width 0.3s ease;
-        }
-        .nav-link:hover::after { width: 100%; }
-
         .info-card {
           background: rgba(255,255,255,0.03);
           border: 1px solid rgba(255,255,255,0.07);
@@ -149,10 +128,6 @@ export default function Contact() {
           border-radius: 50%;
           display: inline-block;
           box-shadow: 0 0 8px rgba(245,158,11,0.8);
-        }
-        .divider {
-          height: 1px;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
         }
 
         @keyframes fadeUp {
@@ -191,53 +166,6 @@ export default function Contact() {
         }
       `}</style>
 
-      {/* ── Navbar ── */}
-      <nav
-        className="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
-        style={{
-          background: scrolled ? 'rgba(8,8,8,0.95)' : 'transparent',
-          borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : 'none',
-          backdropFilter: scrolled ? 'blur(20px)' : 'none',
-          padding: scrolled ? '14px 0' : '22px 0',
-        }}
-      >
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)', boxShadow: '0 0 20px rgba(245,158,11,0.3)' }}>
-              <span className="text-white text-xs font-bold">PE</span>
-            </div>
-            <span className="font-display text-xl tracking-wide" style={{ color: '#e8e0d5' }}>Platinum Estate</span>
-          </Link>
-          <div className="hidden md:flex items-center gap-10">
-            {[
-              { label: 'Home', to: '/' },
-              { label: 'Properties', to: '/property' },
-              { label: 'About', to: '/about' },
-              { label: 'Contact', to: '/contact' },
-            ].map(item => (
-              <Link key={item.label} to={item.to}
-                className="nav-link text-sm font-medium transition-colors"
-                style={{ color: item.label === 'Contact' ? '#f59e0b' : 'rgba(232,224,213,0.7)' }}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
-          <div className="flex items-center gap-3">
-            <Link to="/login">
-              <button className="text-sm font-medium px-5 py-2.5 rounded-lg border transition-all duration-300"
-                style={{ borderColor: 'rgba(245,158,11,0.3)', color: '#f59e0b', background: 'rgba(245,158,11,0.05)' }}>
-                Sign In
-              </button>
-            </Link>
-            <button className="btn-gold text-sm font-medium px-5 py-2.5 rounded-lg text-white">
-              List Property
-            </button>
-          </div>
-        </div>
-      </nav>
-
       {/* ── Hero Banner ── */}
       <section
         className="pt-36 pb-20 px-6 relative"
@@ -247,12 +175,10 @@ export default function Contact() {
           backgroundPosition: 'center',
         }}
       >
-        {/* Grid overlay */}
         <div className="absolute inset-0 pointer-events-none" style={{
           backgroundImage: `linear-gradient(rgba(245,158,11,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(245,158,11,0.03) 1px, transparent 1px)`,
           backgroundSize: '80px 80px',
         }} />
-
         <div className="relative z-10 max-w-3xl mx-auto text-center">
           <div className="fade-up-1 flex items-center justify-center gap-3 mb-4">
             <span className="amber-line"></span>
@@ -304,15 +230,12 @@ export default function Contact() {
               Let's Start a Conversation
             </h2>
 
-            {/* Success */}
             {success && (
               <div className="mb-6 p-4 rounded-xl text-sm flex items-center gap-2"
                 style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', color: '#34d399' }}>
                 ✅ Message sent successfully! We'll get back to you soon.
               </div>
             )}
-
-            {/* Error */}
             {error && (
               <div className="mb-6 p-4 rounded-xl text-sm flex items-center gap-2"
                 style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171' }}>
@@ -321,62 +244,37 @@ export default function Contact() {
             )}
 
             <div className="space-y-4">
-              {/* Name + Email */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium mb-2 tracking-wide" style={{ color: 'rgba(232,224,213,0.5)' }}>
                     Full Name <span style={{ color: '#f59e0b' }}>*</span>
                   </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="John Silva"
-                    className="input-dark"
-                  />
+                  <input type="text" name="name" value={formData.name} onChange={handleChange}
+                    placeholder="John Silva" className="input-dark" />
                 </div>
                 <div>
                   <label className="block text-xs font-medium mb-2 tracking-wide" style={{ color: 'rgba(232,224,213,0.5)' }}>
                     Email Address <span style={{ color: '#f59e0b' }}>*</span>
                   </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="you@example.com"
-                    className="input-dark"
-                  />
+                  <input type="email" name="email" value={formData.email} onChange={handleChange}
+                    placeholder="you@example.com" className="input-dark" />
                 </div>
               </div>
 
-              {/* Phone + Subject */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium mb-2 tracking-wide" style={{ color: 'rgba(232,224,213,0.5)' }}>
                     Phone Number
                   </label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder="+94 77 000 0000"
-                    className="input-dark"
-                  />
+                  <input type="tel" name="phone" value={formData.phone} onChange={handleChange}
+                    placeholder="+94 77 000 0000" className="input-dark" />
                 </div>
                 <div>
                   <label className="block text-xs font-medium mb-2 tracking-wide" style={{ color: 'rgba(232,224,213,0.5)' }}>
                     Subject
                   </label>
-                  <select
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    className="input-dark"
-                    style={{ background: 'rgba(255,255,255,0.04)' }}
-                  >
+                  <select name="subject" value={formData.subject} onChange={handleChange}
+                    className="input-dark" style={{ background: 'rgba(255,255,255,0.04)' }}>
                     <option value="" style={{ background: '#1a1a1a' }}>Select a subject</option>
                     <option value="buy" style={{ background: '#1a1a1a' }}>Buy Property</option>
                     <option value="sell" style={{ background: '#1a1a1a' }}>Sell Property</option>
@@ -387,57 +285,35 @@ export default function Contact() {
                 </div>
               </div>
 
-              {/* Message */}
               <div>
                 <label className="block text-xs font-medium mb-2 tracking-wide" style={{ color: 'rgba(232,224,213,0.5)' }}>
                   Message <span style={{ color: '#f59e0b' }}>*</span>
                 </label>
-                <textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  placeholder="Tell us how we can help you..."
-                  rows={5}
-                  className="input-dark"
-                  style={{ resize: 'none' }}
-                />
+                <textarea name="message" value={formData.message} onChange={handleChange}
+                  placeholder="Tell us how we can help you..." rows={5}
+                  className="input-dark" style={{ resize: 'none' }} />
               </div>
 
-              {/* Submit */}
-              <button
-                onClick={handleSubmit}
-                disabled={loading}
-                className="btn-gold w-full py-4 text-white font-semibold rounded-xl text-base flex items-center justify-center gap-2"
-              >
+              <button onClick={handleSubmit} disabled={loading}
+                className="btn-gold w-full py-4 text-white font-semibold rounded-xl text-base flex items-center justify-center gap-2">
                 {loading ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    Sending...
-                  </>
-                ) : (
-                  <>Send Message →</>
-                )}
+                  <><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>Sending...</>
+                ) : <>Send Message →</>}
               </button>
             </div>
           </div>
 
           {/* Right Side */}
           <div className="flex flex-col gap-6">
-
-            {/* Map */}
             <div className="map-container">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3960.798467128887!2d79.84787731477326!3d6.914682495003434!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae2597a0e00000f%3A0x10000000000000!2sColombo%2003%2C%20Sri%20Lanka!5e0!3m2!1sen!2slk!4v1620000000000!5m2!1sen!2slk"
-                width="100%"
-                height="100%"
+                width="100%" height="100%"
                 style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg)' }}
-                allowFullScreen=""
-                loading="lazy"
-                title="Platinum Estate Location"
+                allowFullScreen="" loading="lazy" title="Platinum Estate Location"
               />
             </div>
 
-            {/* Follow Us */}
             <div className="info-card">
               <h3 className="font-display text-xl font-semibold mb-2" style={{ color: '#e8e0d5' }}>Follow Us</h3>
               <p className="text-sm mb-5" style={{ color: 'rgba(232,224,213,0.4)' }}>
@@ -450,23 +326,17 @@ export default function Contact() {
               </div>
             </div>
 
-            {/* Quick Contact */}
             <div className="info-card">
               <h3 className="font-display text-xl font-semibold mb-4" style={{ color: '#e8e0d5' }}>Quick Contact</h3>
               <div className="space-y-3">
-                <a href="tel:+94112345678" className="flex items-center gap-3 text-sm transition-colors group"
-                  style={{ color: 'rgba(232,224,213,0.5)' }}>
-                  <span className="text-lg">📞</span>
-                  <span>+94 11 234 5678</span>
+                <a href="tel:+94112345678" className="flex items-center gap-3 text-sm" style={{ color: 'rgba(232,224,213,0.5)' }}>
+                  <span className="text-lg">📞</span><span>+94 11 234 5678</span>
                 </a>
-                <a href="mailto:info@platinumestate.lk" className="flex items-center gap-3 text-sm transition-colors"
-                  style={{ color: 'rgba(232,224,213,0.5)' }}>
-                  <span className="text-lg">✉️</span>
-                  <span>info@platinumestate.lk</span>
+                <a href="mailto:info@platinumestate.lk" className="flex items-center gap-3 text-sm" style={{ color: 'rgba(232,224,213,0.5)' }}>
+                  <span className="text-lg">✉️</span><span>info@platinumestate.lk</span>
                 </a>
                 <div className="flex items-center gap-3 text-sm" style={{ color: 'rgba(232,224,213,0.5)' }}>
-                  <span className="text-lg">📍</span>
-                  <span>No. 42, Galle Road, Colombo 03</span>
+                  <span className="text-lg">📍</span><span>No. 42, Galle Road, Colombo 03</span>
                 </div>
               </div>
             </div>
