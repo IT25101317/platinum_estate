@@ -64,6 +64,8 @@ export default function PaymentFormModal({ isOpen, onClose, onSubmit, editingPay
     setSaving(true);
     const payload = {
       ...form,
+      // ✅ FIX 1: Auto-generate transactionId if blank (prevents @NotBlank backend error)
+      transactionId: form.transactionId.trim() || `TXN-${Date.now()}`,
       amount: Number(form.amount),
       propertyId: form.propertyId ? Number(form.propertyId) : null,
     };
@@ -129,13 +131,15 @@ export default function PaymentFormModal({ isOpen, onClose, onSubmit, editingPay
           <div className="grid grid-cols-3 gap-4">
             <Field label="Amount" name="amount" type="number" placeholder="0.00" />
             <Field label="Currency" name="currency">
+              {/* ✅ FIX 2: Added explicit value={c} so submitted value matches backend enum */}
               <select name="currency" value={form.currency} onChange={handleChange} className={inputCls("currency")}>
-                {CURRENCIES.map((c) => <option key={c}>{c}</option>)}
+                {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </Field>
             <Field label="Status" name="status">
+              {/* ✅ FIX 2: Added explicit value={s} so submitted value matches backend enum */}
               <select name="status" value={form.status} onChange={handleChange} className={inputCls("status")}>
-                {STATUSES.map((s) => <option key={s}>{s}</option>)}
+                {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
               </select>
               {errors.status && <p className="text-red-500 text-xs mt-1">{errors.status}</p>}
             </Field>
@@ -144,8 +148,11 @@ export default function PaymentFormModal({ isOpen, onClose, onSubmit, editingPay
           {/* Row 3 */}
           <div className="grid grid-cols-2 gap-4">
             <Field label="Payment Method" name="paymentMethod">
+              {/* ✅ FIX 3: value={m} keeps underscore for backend, display replaces _ with space for UI */}
               <select name="paymentMethod" value={form.paymentMethod} onChange={handleChange} className={inputCls("paymentMethod")}>
-                {METHODS.map((m) => <option key={m}>{m.replace("_", " ")}</option>)}
+                {METHODS.map((m) => (
+                  <option key={m} value={m}>{m.replace(/_/g, " ")}</option>
+                ))}
               </select>
               {errors.paymentMethod && <p className="text-red-500 text-xs mt-1">{errors.paymentMethod}</p>}
             </Field>

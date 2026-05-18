@@ -326,3 +326,5 @@ dist/
 ## 📄 License
 
 This project is built for academic purposes as part of a group assignment.
+
+susa@gmail.com
