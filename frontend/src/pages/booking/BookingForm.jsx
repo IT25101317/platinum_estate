@@ -23,19 +23,46 @@ const EMPTY_FORM = {
   status:        'PENDING',
 }
 
-export default function BookingForm() {
+export default function BookingForm({ existingBooking, incomingProperty, onSuccess, onCancel }) {
   const { id }     = useParams()       // exists when editing
-  const isEdit     = Boolean(id)
+  const isEdit     = Boolean(id) || Boolean(existingBooking)
   const navigate   = useNavigate()
 
-  const [form,    setForm]    = useState(EMPTY_FORM)
+  const [form,    setForm]    = useState(() => {
+    // Pre-fill from incoming property (navigated from Property Listing)
+    if (incomingProperty) {
+      return {
+        ...EMPTY_FORM,
+        propertyId:    incomingProperty.propertyId || '',
+        propertyTitle: incomingProperty.propertyTitle || '',
+        totalPrice:    incomingProperty.totalPrice || '',
+      }
+    }
+    return EMPTY_FORM
+  })
   const [loading, setLoading] = useState(false)
   const [error,   setError]   = useState(null)
   const [saving,  setSaving]  = useState(false)
 
   // ── Load existing data when editing ──────────────────────────────────────
   useEffect(() => {
-    if (!isEdit) return
+    if (existingBooking) {
+      setForm({
+        propertyId:    existingBooking.propertyId    ?? '',
+        userId:        existingBooking.userId        ?? '',
+        userName:      existingBooking.userName      ?? '',
+        userEmail:     existingBooking.userEmail     ?? '',
+        userPhone:     existingBooking.userPhone     ?? '',
+        propertyTitle: existingBooking.propertyTitle ?? '',
+        checkInDate:   existingBooking.checkInDate   ?? '',
+        checkOutDate:  existingBooking.checkOutDate  ?? '',
+        totalPrice:    existingBooking.totalPrice    ?? '',
+        notes:         existingBooking.notes         ?? '',
+        status:        existingBooking.status        ?? 'PENDING',
+      })
+      return
+    }
+    if (!isEdit || !id) return
     setLoading(true)
     getBookingById(id)
       .then(data => {
@@ -55,7 +82,7 @@ export default function BookingForm() {
       })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false))
-  }, [id])
+  }, [id, existingBooking])
 
   // ── Handle input change ──────────────────────────────────────────────────
   function handleChange(e) {
@@ -78,12 +105,18 @@ export default function BookingForm() {
     }
 
     try {
-      if (isEdit) {
+      if (isEdit && id) {
         await updateBooking(id, payload)
+      } else if (isEdit && existingBooking) {
+        await updateBooking(existingBooking.id, payload)
       } else {
         await createBooking(payload)
       }
-      navigate('/booking')
+      if (onSuccess) {
+        onSuccess()
+      } else {
+        navigate('/booking')
+      }
     } catch (err) {
       setError(err.message)
     } finally {
@@ -217,7 +250,7 @@ export default function BookingForm() {
               </button>
               <button
                 type="button"
-                onClick={() => navigate('/booking')}
+                onClick={() => onCancel ? onCancel() : navigate('/booking')}
                 className="px-6 py-3 rounded-xl text-sm"
                 style={{ border: '1px solid rgba(245,158,11,0.2)', color: '#e8e0d0' }}>
                 Cancel

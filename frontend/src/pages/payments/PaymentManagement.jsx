@@ -2,6 +2,7 @@
 // Main Payment Management page — full CRUD UI with stats dashboard.
 
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { usePayments } from "./hooks/usePayments";
 import PaymentFormModal   from "./components/PaymentFormModal";
 import PaymentDeleteModal from "./components/PaymentDeleteModal";
@@ -47,6 +48,9 @@ const StatCard = ({ label, value, color, prefix = "" }) => (
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function PaymentManagement() {
+  const location = useLocation();
+  const incomingBooking = location.state || null; // { payerName, payerEmail, amount, propertyId, propertyTitle, description }
+
   const {
     payments, loading, error,
     searchTerm, setSearchTerm,
@@ -54,7 +58,11 @@ export default function PaymentManagement() {
     handleCreate, handleUpdate, handleDelete,
   } = usePayments();
 
-  const [formModal,   setFormModal]   = useState({ open: false, payment: null });
+  const [formModal,   setFormModal]   = useState({
+    open: !!incomingBooking,
+    payment: incomingBooking ? incomingBooking : null,
+    isFromBooking: !!incomingBooking,
+  });
   const [deleteModal, setDeleteModal] = useState({ open: false, payment: null });
   const [toast, setToast]             = useState(null);
   const [statusFilter, setStatusFilter] = useState("ALL");
@@ -65,12 +73,12 @@ export default function PaymentManagement() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  const openCreate = ()        => setFormModal({ open: true, payment: null });
-  const openEdit   = (payment) => setFormModal({ open: true, payment });
+  const openCreate = ()        => setFormModal({ open: true, payment: null, isFromBooking: false });
+  const openEdit   = (payment) => setFormModal({ open: true, payment, isFromBooking: false });
   const openDelete = (payment) => setDeleteModal({ open: true, payment });
 
   const handleFormSubmit = async (formData) => {
-    const isEdit = !!formModal.payment;
+    const isEdit = !!formModal.payment && !formModal.isFromBooking;
     const result = isEdit
       ? await handleUpdate(formModal.payment.id, formData)
       : await handleCreate(formData);
@@ -251,9 +259,10 @@ export default function PaymentManagement() {
       {/* Modals */}
       <PaymentFormModal
         isOpen={formModal.open}
-        onClose={() => setFormModal({ open: false, payment: null })}
+        onClose={() => setFormModal({ open: false, payment: null, isFromBooking: false })}
         onSubmit={handleFormSubmit}
-        editingPayment={formModal.payment}
+        editingPayment={formModal.isFromBooking ? null : formModal.payment}
+        incomingBooking={formModal.isFromBooking ? formModal.payment : null}
       />
       <PaymentDeleteModal
         isOpen={deleteModal.open}
