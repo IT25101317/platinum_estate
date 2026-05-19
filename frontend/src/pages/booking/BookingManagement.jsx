@@ -1,5 +1,6 @@
 // src/pages/booking/BookingManagement.jsx
 import { useState, useEffect, useCallback } from "react";
+import { useLocation } from "react-router-dom";
 import bookingService from "../../services/bookingService";
 import BookingCard from "./BookingCard";
 import BookingForm from "./BookingForm";
@@ -7,11 +8,14 @@ import BookingForm from "./BookingForm";
 const STATUS_FILTERS = ["ALL", "PENDING", "CONFIRMED", "CANCELLED", "COMPLETED"];
 
 export default function BookingManagement() {
+  const location = useLocation();
+  const incomingProperty = location.state || null; // { propertyId, propertyTitle, totalPrice }
+
   const [bookings, setBookings]         = useState([]);
   const [filtered, setFiltered]         = useState([]);
   const [loading, setLoading]           = useState(true);
   const [error, setError]               = useState("");
-  const [showForm, setShowForm]         = useState(false);
+  const [showForm, setShowForm]         = useState(!!incomingProperty);
   const [editingBooking, setEditingBooking] = useState(null);
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [searchId, setSearchId]         = useState("");
@@ -135,6 +139,7 @@ export default function BookingManagement() {
           <div className="mb-8">
             <BookingForm
               existingBooking={editingBooking}
+              incomingProperty={incomingProperty}
               onSuccess={handleFormSuccess}
               onCancel={handleCancel}
             />

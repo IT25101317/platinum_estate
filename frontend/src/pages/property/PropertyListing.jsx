@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   getAllProperties,
   searchProperties,
@@ -25,6 +25,7 @@ const formatPrice = (p) =>
   }).format(p);
 
 export default function PropertyListing() {
+  const navigate = useNavigate();
   const [allProperties, setAllProperties] = useState([]);
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -173,7 +174,7 @@ export default function PropertyListing() {
         {!loading && !error && properties.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {properties.map((property) => (
-              <PublicPropertyCard key={property.id} property={property} />
+              <PublicPropertyCard key={property.id} property={property} navigate={navigate} />
             ))}
           </div>
         )}
@@ -195,9 +196,19 @@ export default function PropertyListing() {
   );
 }
 
-function PublicPropertyCard({ property }) {
-  const { title, description, location, price, propertyType,
+function PublicPropertyCard({ property, navigate }) {
+  const { id, title, description, location, price, propertyType,
           bedrooms, bathrooms, areaSqFt, imageUrl } = property;
+
+  const handleBookNow = () => {
+    navigate('/booking', {
+      state: {
+        propertyId: id,
+        propertyTitle: title,
+        totalPrice: price,
+      },
+    });
+  };
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden card-hover border border-stone-100 flex flex-col">
@@ -227,10 +238,18 @@ function PublicPropertyCard({ property }) {
           {areaSqFt > 0 && <span>📐 {areaSqFt} sqft</span>}
         </div>
 
-        <div className="mt-auto flex items-center justify-between">
-          <p className="font-display text-amber-600 text-lg font-semibold">{formatPrice(price)}</p>
-          <button className="text-xs px-4 py-2 rounded-lg bg-stone-900 hover:bg-amber-500 text-white transition-colors">
-            View Details
+        <div className="mt-auto">
+          <div className="flex items-center justify-between mb-3">
+            <p className="font-display text-amber-600 text-lg font-semibold">{formatPrice(price)}</p>
+            <button className="text-xs px-4 py-2 rounded-lg bg-stone-900 hover:bg-amber-500 text-white transition-colors">
+              View Details
+            </button>
+          </div>
+          <button
+            onClick={handleBookNow}
+            className="w-full text-xs px-4 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-semibold transition-colors"
+          >
+            📅 Book This Property
           </button>
         </div>
       </div>

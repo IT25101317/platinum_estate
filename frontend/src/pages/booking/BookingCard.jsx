@@ -1,4 +1,5 @@
 // src/pages/booking/BookingCard.jsx
+import { useNavigate } from "react-router-dom";
 
 const STATUS_STYLES = {
   PENDING:   "bg-amber-50 text-amber-700 border-amber-200",
@@ -8,11 +9,25 @@ const STATUS_STYLES = {
 };
 
 export default function BookingCard({ booking, onEdit, onDelete, onStatusChange }) {
+  const navigate = useNavigate();
   const statusStyle = STATUS_STYLES[booking.status] || "bg-slate-100 text-slate-600";
 
   const nights = Math.ceil(
     (new Date(booking.checkOutDate) - new Date(booking.checkInDate)) / (1000 * 60 * 60 * 24)
   );
+
+  const handlePayNow = () => {
+    navigate('/payments', {
+      state: {
+        payerName: booking.userName,
+        payerEmail: booking.userEmail,
+        amount: booking.totalPrice,
+        propertyId: booking.propertyId,
+        propertyTitle: booking.propertyTitle,
+        description: `Payment for Booking #${booking.id} — ${booking.propertyTitle}`,
+      },
+    });
+  };
 
   return (
     <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm transition hover:shadow-md">
@@ -45,6 +60,15 @@ export default function BookingCard({ booking, onEdit, onDelete, onStatusChange 
         <p className="mb-4 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500 italic">
           "{booking.specialRequests}"
         </p>
+      )}
+
+      {/* Pay Now Button */}
+      {(booking.status === "CONFIRMED" || booking.status === "PENDING") && (
+        <button onClick={handlePayNow}
+          className="w-full mb-3 rounded-lg bg-green-500 px-4 py-2.5 text-sm font-bold
+                     text-white transition hover:bg-green-600 flex items-center justify-center gap-2">
+          💳 Pay Now
+        </button>
       )}
 
       {/* Actions */}

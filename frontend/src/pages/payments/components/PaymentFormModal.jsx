@@ -12,7 +12,7 @@ const emptyForm = {
   propertyTitle: "", description: "",
 };
 
-export default function PaymentFormModal({ isOpen, onClose, onSubmit, editingPayment }) {
+export default function PaymentFormModal({ isOpen, onClose, onSubmit, editingPayment, incomingBooking }) {
   const [form, setForm] = useState(emptyForm);
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
@@ -20,21 +20,36 @@ export default function PaymentFormModal({ isOpen, onClose, onSubmit, editingPay
 
   useEffect(() => {
     if (isOpen) {
-      setForm(editingPayment ? {
-        transactionId: editingPayment.transactionId || "",
-        amount: editingPayment.amount || "",
-        currency: editingPayment.currency || "LKR",
-        paymentMethod: editingPayment.paymentMethod || "BANK_TRANSFER",
-        status: editingPayment.status || "PENDING",
-        payerName: editingPayment.payerName || "",
-        payerEmail: editingPayment.payerEmail || "",
-        propertyId: editingPayment.propertyId || "",
-        propertyTitle: editingPayment.propertyTitle || "",
-        description: editingPayment.description || "",
-      } : emptyForm);
+      if (editingPayment) {
+        setForm({
+          transactionId: editingPayment.transactionId || "",
+          amount: editingPayment.amount || "",
+          currency: editingPayment.currency || "LKR",
+          paymentMethod: editingPayment.paymentMethod || "BANK_TRANSFER",
+          status: editingPayment.status || "PENDING",
+          payerName: editingPayment.payerName || "",
+          payerEmail: editingPayment.payerEmail || "",
+          propertyId: editingPayment.propertyId || "",
+          propertyTitle: editingPayment.propertyTitle || "",
+          description: editingPayment.description || "",
+        });
+      } else if (incomingBooking) {
+        // Pre-fill from booking data
+        setForm({
+          ...emptyForm,
+          payerName: incomingBooking.payerName || "",
+          payerEmail: incomingBooking.payerEmail || "",
+          amount: incomingBooking.amount || "",
+          propertyId: incomingBooking.propertyId || "",
+          propertyTitle: incomingBooking.propertyTitle || "",
+          description: incomingBooking.description || "",
+        });
+      } else {
+        setForm(emptyForm);
+      }
       setErrors({});
     }
-  }, [editingPayment, isOpen]);
+  }, [editingPayment, incomingBooking, isOpen]);
 
   if (!isOpen) return null;
 
