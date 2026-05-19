@@ -1,5 +1,3 @@
-// src/pages/payments/components/PaymentDeleteModal.jsx
-
 export default function PaymentDeleteModal({ isOpen, onClose, onConfirm, transactionId }) {
   if (!isOpen) return null;
 

@@ -1,6 +1,3 @@
-// src/pages/payments/hooks/usePayments.js
-// Custom hook — isolates all payment state and CRUD logic from the UI.
-
 import { useState, useEffect, useCallback } from "react";
 import {
   getAllPayments,
@@ -18,7 +15,6 @@ export const usePayments = () => {
   const [searchTerm, setSearchTerm]   = useState("");
   const [totalRevenue, setTotalRevenue] = useState(0);
 
-  // ─── Fetch payments (debounced search) ──────────────────────────────────────
   const fetchPayments = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -34,7 +30,6 @@ export const usePayments = () => {
     }
   }, [searchTerm]);
 
-  // ─── Fetch total revenue ─────────────────────────────────────────────────────
   const fetchRevenue = useCallback(async () => {
     try {
       const data = await getTotalRevenue();
@@ -53,7 +48,6 @@ export const usePayments = () => {
     fetchRevenue();
   }, [fetchRevenue, payments]);
 
-  // ─── Create ──────────────────────────────────────────────────────────────────
   const handleCreate = async (paymentData) => {
     setLoading(true);
     setError(null);
@@ -69,7 +63,6 @@ export const usePayments = () => {
     }
   };
 
-  // ─── Update ──────────────────────────────────────────────────────────────────
   const handleUpdate = async (id, paymentData) => {
     setLoading(true);
     setError(null);
@@ -85,7 +78,6 @@ export const usePayments = () => {
     }
   };
 
-  // ─── Delete ──────────────────────────────────────────────────────────────────
   const handleDelete = async (id) => {
     setLoading(true);
     setError(null);
@@ -101,7 +93,6 @@ export const usePayments = () => {
     }
   };
 
-  // ─── Stats helpers ───────────────────────────────────────────────────────────
   const completedCount = payments.filter((p) => p.status === "COMPLETED").length;
   const pendingCount   = payments.filter((p) => p.status === "PENDING").length;
   const failedCount    = payments.filter((p) => p.status === "FAILED").length;

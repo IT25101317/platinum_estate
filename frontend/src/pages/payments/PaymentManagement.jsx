@@ -1,13 +1,9 @@
-// src/pages/payments/PaymentManagement.jsx
-// Main Payment Management page — full CRUD UI with stats dashboard.
-
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { usePayments } from "./hooks/usePayments";
 import PaymentFormModal   from "./components/PaymentFormModal";
 import PaymentDeleteModal from "./components/PaymentDeleteModal";
 
-// ─── Status badge ─────────────────────────────────────────────────────────────
 const StatusBadge = ({ status }) => {
   const map = {
     COMPLETED: "bg-green-100 text-green-700",
@@ -22,7 +18,6 @@ const StatusBadge = ({ status }) => {
   );
 };
 
-// ─── Method badge ─────────────────────────────────────────────────────────────
 const MethodBadge = ({ method }) => {
   const map = {
     CREDIT_CARD:   "bg-purple-100 text-purple-700",
@@ -38,7 +33,6 @@ const MethodBadge = ({ method }) => {
   );
 };
 
-// ─── Stat Card ────────────────────────────────────────────────────────────────
 const StatCard = ({ label, value, color, prefix = "" }) => (
   <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
     <p className="text-xs text-gray-500 mb-1">{label}</p>
@@ -46,10 +40,9 @@ const StatCard = ({ label, value, color, prefix = "" }) => (
   </div>
 );
 
-// ─── Main Component ───────────────────────────────────────────────────────────
 export default function PaymentManagement() {
   const location = useLocation();
-  const incomingBooking = location.state || null; // { payerName, payerEmail, amount, propertyId, propertyTitle, description }
+  const incomingBooking = location.state || null;
 
   const {
     payments, loading, error,
@@ -67,7 +60,6 @@ export default function PaymentManagement() {
   const [toast, setToast]             = useState(null);
   const [statusFilter, setStatusFilter] = useState("ALL");
 
-  // ─── Toast ──────────────────────────────────────────────────────────────────
   const showToast = (message, type = "success") => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3000);
@@ -96,7 +88,6 @@ export default function PaymentManagement() {
     );
   };
 
-  // ─── Filter by status ────────────────────────────────────────────────────────
   const filtered = statusFilter === "ALL"
     ? payments
     : payments.filter((p) => p.status === statusFilter);
@@ -104,7 +95,6 @@ export default function PaymentManagement() {
   return (
     <div className="p-6 max-w-7xl mx-auto">
 
-      {/* Toast */}
       {toast && (
         <div className={`fixed top-5 right-5 z-50 px-5 py-3 rounded-lg shadow-lg text-white text-sm font-medium
           ${toast.type === "error" ? "bg-red-500" : "bg-green-500"}`}>
@@ -112,7 +102,6 @@ export default function PaymentManagement() {
         </div>
       )}
 
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Payment Management</h1>
@@ -127,7 +116,6 @@ export default function PaymentManagement() {
         </button>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-6">
         <StatCard label="Total Payments" value={payments.length}  color="text-gray-800" />
         <StatCard label="Completed"      value={completedCount}   color="text-green-600" />
@@ -136,7 +124,6 @@ export default function PaymentManagement() {
         <StatCard label="Total Revenue"  value={totalRevenue.toLocaleString()} color="text-amber-600" prefix="LKR " />
       </div>
 
-      {/* Search + Filter */}
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div className="relative flex-1">
           <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
@@ -160,14 +147,12 @@ export default function PaymentManagement() {
         </select>
       </div>
 
-      {/* Error */}
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg px-4 py-3 mb-5">
           {error}
         </div>
       )}
 
-      {/* Table */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center h-52">
@@ -256,7 +241,6 @@ export default function PaymentManagement() {
         )}
       </div>
 
-      {/* Modals */}
       <PaymentFormModal
         isOpen={formModal.open}
         onClose={() => setFormModal({ open: false, payment: null, isFromBooking: false })}

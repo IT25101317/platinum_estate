@@ -1,4 +1,3 @@
-// src/pages/payments/components/PaymentFormModal.jsx
 import { useState, useEffect } from "react";
 
 const METHODS = ["CREDIT_CARD", "DEBIT_CARD", "BANK_TRANSFER", "CASH", "ONLINE"];
@@ -34,7 +33,6 @@ export default function PaymentFormModal({ isOpen, onClose, onSubmit, editingPay
           description: editingPayment.description || "",
         });
       } else if (incomingBooking) {
-        // Pre-fill from booking data
         setForm({
           ...emptyForm,
           payerName: incomingBooking.payerName || "",
@@ -53,7 +51,6 @@ export default function PaymentFormModal({ isOpen, onClose, onSubmit, editingPay
 
   if (!isOpen) return null;
 
-  // ─── Validation ─────────────────────────────────────────────────────────────
   const validate = () => {
     const e = {};
     if (!form.payerName.trim()) e.payerName = "Payer name is required";
@@ -79,7 +76,6 @@ export default function PaymentFormModal({ isOpen, onClose, onSubmit, editingPay
     setSaving(true);
     const payload = {
       ...form,
-      // ✅ FIX 1: Auto-generate transactionId if blank (prevents @NotBlank backend error)
       transactionId: form.transactionId.trim() || `TXN-${Date.now()}`,
       amount: Number(form.amount),
       propertyId: form.propertyId ? Number(form.propertyId) : null,
@@ -112,7 +108,6 @@ export default function PaymentFormModal({ isOpen, onClose, onSubmit, editingPay
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
 
-        {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b flex-shrink-0">
           <div>
             <h2 className="text-lg font-semibold text-gray-800">
@@ -128,7 +123,6 @@ export default function PaymentFormModal({ isOpen, onClose, onSubmit, editingPay
           </button>
         </div>
 
-        {/* Body */}
         <div className="px-6 py-5 overflow-y-auto space-y-4">
           {errors.api && (
             <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg px-4 py-3">
@@ -136,23 +130,19 @@ export default function PaymentFormModal({ isOpen, onClose, onSubmit, editingPay
             </div>
           )}
 
-          {/* Row 1 */}
           <div className="grid grid-cols-2 gap-4">
             <Field label="Payer Name" name="payerName" placeholder="e.g. John Silva" />
             <Field label="Payer Email" name="payerEmail" type="email" placeholder="john@email.com" />
           </div>
 
-          {/* Row 2 */}
           <div className="grid grid-cols-3 gap-4">
             <Field label="Amount" name="amount" type="number" placeholder="0.00" />
             <Field label="Currency" name="currency">
-              {/* ✅ FIX 2: Added explicit value={c} so submitted value matches backend enum */}
               <select name="currency" value={form.currency} onChange={handleChange} className={inputCls("currency")}>
                 {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </Field>
             <Field label="Status" name="status">
-              {/* ✅ FIX 2: Added explicit value={s} so submitted value matches backend enum */}
               <select name="status" value={form.status} onChange={handleChange} className={inputCls("status")}>
                 {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
               </select>
@@ -160,10 +150,8 @@ export default function PaymentFormModal({ isOpen, onClose, onSubmit, editingPay
             </Field>
           </div>
 
-          {/* Row 3 */}
           <div className="grid grid-cols-2 gap-4">
             <Field label="Payment Method" name="paymentMethod">
-              {/* ✅ FIX 3: value={m} keeps underscore for backend, display replaces _ with space for UI */}
               <select name="paymentMethod" value={form.paymentMethod} onChange={handleChange} className={inputCls("paymentMethod")}>
                 {METHODS.map((m) => (
                   <option key={m} value={m}>{m.replace(/_/g, " ")}</option>
@@ -174,13 +162,11 @@ export default function PaymentFormModal({ isOpen, onClose, onSubmit, editingPay
             <Field label="Transaction ID" name="transactionId" placeholder="Auto-generated if blank" />
           </div>
 
-          {/* Row 4 */}
           <div className="grid grid-cols-2 gap-4">
             <Field label="Property ID" name="propertyId" type="number" placeholder="Optional" />
             <Field label="Property Title" name="propertyTitle" placeholder="e.g. Villa in Colombo 7" />
           </div>
 
-          {/* Description */}
           <div>
             <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wide">
               Description
@@ -191,7 +177,6 @@ export default function PaymentFormModal({ isOpen, onClose, onSubmit, editingPay
           </div>
         </div>
 
-        {/* Footer */}
         <div className="flex justify-end gap-3 px-6 py-4 border-t bg-gray-50 rounded-b-xl flex-shrink-0">
           <button onClick={onClose}
             className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100 transition">
