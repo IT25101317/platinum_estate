@@ -1,25 +1,20 @@
 package com.real_estate_web.backend.foq;
 
-import com.real_estate_web.backend.dto.*;  
 import java.util.List;
 
 public interface FAQService {
 
-    // CREATE
     FAQDTO createFAQ(FAQDTO faqDTO);
 
-    // READ
-    List<FAQDTO> getAllFAQs();                          // Admin: all FAQs
-    List<FAQDTO> getActiveFAQs();                       // Public: active only
-    List<FAQDTO> getFAQsByCategory(String category);    // Public: by category
-    List<FAQDTO> searchFAQs(String keyword);            // Public: search
-    List<String> getAllCategories();                     // Public: categories list
-    FAQDTO getFAQById(Long id);                         // Admin: single FAQ
+    List<FAQDTO> getAllFAQs();
+    List<FAQDTO> getActiveFAQs();
+    List<FAQDTO> getFAQsByCategory(String category);
+    List<FAQDTO> searchFAQs(String keyword);
+    List<String> getAllCategories();
+    FAQDTO getFAQById(Long id);
 
-    // UPDATE
     FAQDTO updateFAQ(Long id, FAQDTO faqDTO);
-    FAQDTO toggleFAQStatus(Long id);                    // Admin: activate/deactivate
+    FAQDTO toggleFAQStatus(Long id);
 
-    // DELETE
     void deleteFAQ(Long id);
 }

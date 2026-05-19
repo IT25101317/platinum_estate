@@ -37,7 +37,6 @@ public class FAQ {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Lifecycle hooks
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -49,7 +48,6 @@ public class FAQ {
         updatedAt = LocalDateTime.now();
     }
 
-    // Constructors
     public FAQ() {}
 
     public FAQ(String question, String answer, String category, Boolean isActive, Integer displayOrder) {
@@ -60,7 +58,6 @@ public class FAQ {
         this.displayOrder = displayOrder;
     }
 
-    // Getters & Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

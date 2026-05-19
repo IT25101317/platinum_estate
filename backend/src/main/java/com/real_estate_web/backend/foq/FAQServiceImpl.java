@@ -1,15 +1,11 @@
 package com.real_estate_web.backend.foq;
 
-import com.real_estate_web.backend.dto.*;        
-import com.real_estate_web.backend.exception.*;  
-import com.real_estate_web.backend.model.*;      
-import com.real_estate_web.backend.repository.*; 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -22,7 +18,6 @@ public class FAQServiceImpl implements FAQService {
         this.faqRepository = faqRepository;
     }
 
-    // ─── Mapper: Entity → DTO ────────────────────────────────────────
     private FAQDTO mapToDTO(FAQ faq) {
         return new FAQDTO(
             faq.getId(),
@@ -36,7 +31,6 @@ public class FAQServiceImpl implements FAQService {
         );
     }
 
-    // ─── Mapper: DTO → Entity ────────────────────────────────────────
     private FAQ mapToEntity(FAQDTO dto) {
         FAQ faq = new FAQ();
         faq.setQuestion(dto.getQuestion().trim());
@@ -47,62 +41,54 @@ public class FAQServiceImpl implements FAQService {
         return faq;
     }
 
-    // ─── CREATE ──────────────────────────────────────────────────────
     @Override
     public FAQDTO createFAQ(FAQDTO faqDTO) {
         FAQ faq = mapToEntity(faqDTO);
-        FAQ saved = faqRepository.save(faq);
-        return mapToDTO(saved);
+        return mapToDTO(faqRepository.save(faq));
     }
 
-    // ─── READ: All FAQs (Admin) ───────────────────────────────────────
     @Override
     @Transactional(readOnly = true)
     public List<FAQDTO> getAllFAQs() {
-        return faqRepository.findAll()
-                .stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+        List<FAQ> faqs = faqRepository.findAll();
+        List<FAQDTO> result = new ArrayList<>();
+        for (FAQ faq : faqs) result.add(mapToDTO(faq));
+        return result;
     }
 
-    // ─── READ: Active FAQs only (Public) ─────────────────────────────
     @Override
     @Transactional(readOnly = true)
     public List<FAQDTO> getActiveFAQs() {
-        return faqRepository.findByIsActiveTrueOrderByDisplayOrderAsc()
-                .stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+        List<FAQ> faqs = faqRepository.findByIsActiveTrueOrderByDisplayOrderAsc();
+        List<FAQDTO> result = new ArrayList<>();
+        for (FAQ faq : faqs) result.add(mapToDTO(faq));
+        return result;
     }
 
-    // ─── READ: By Category ────────────────────────────────────────────
     @Override
     @Transactional(readOnly = true)
     public List<FAQDTO> getFAQsByCategory(String category) {
-        return faqRepository.findByIsActiveTrueAndCategoryOrderByDisplayOrderAsc(category)
-                .stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+        List<FAQ> faqs = faqRepository.findByIsActiveTrueAndCategoryOrderByDisplayOrderAsc(category);
+        List<FAQDTO> result = new ArrayList<>();
+        for (FAQ faq : faqs) result.add(mapToDTO(faq));
+        return result;
     }
 
-    // ─── READ: Search ─────────────────────────────────────────────────
     @Override
     @Transactional(readOnly = true)
     public List<FAQDTO> searchFAQs(String keyword) {
-        return faqRepository.searchByKeyword(keyword)
-                .stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+        List<FAQ> faqs = faqRepository.searchByKeyword(keyword);
+        List<FAQDTO> result = new ArrayList<>();
+        for (FAQ faq : faqs) result.add(mapToDTO(faq));
+        return result;
     }
 
-    // ─── READ: Categories ─────────────────────────────────────────────
     @Override
     @Transactional(readOnly = true)
     public List<String> getAllCategories() {
         return faqRepository.findAllActiveCategories();
     }
 
-    // ─── READ: By ID ──────────────────────────────────────────────────
     @Override
     @Transactional(readOnly = true)
     public FAQDTO getFAQById(Long id) {
@@ -111,7 +97,6 @@ public class FAQServiceImpl implements FAQService {
         return mapToDTO(faq);
     }
 
-    // ─── UPDATE ───────────────────────────────────────────────────────
     @Override
     public FAQDTO updateFAQ(Long id, FAQDTO faqDTO) {
         FAQ existing = faqRepository.findById(id)
@@ -123,11 +108,9 @@ public class FAQServiceImpl implements FAQService {
         existing.setIsActive(faqDTO.getIsActive() != null ? faqDTO.getIsActive() : existing.getIsActive());
         existing.setDisplayOrder(faqDTO.getDisplayOrder() != null ? faqDTO.getDisplayOrder() : existing.getDisplayOrder());
 
-        FAQ updated = faqRepository.save(existing);
-        return mapToDTO(updated);
+        return mapToDTO(faqRepository.save(existing));
     }
 
-    // ─── UPDATE: Toggle Active Status ─────────────────────────────────
     @Override
     public FAQDTO toggleFAQStatus(Long id) {
         FAQ faq = faqRepository.findById(id)
@@ -136,7 +119,6 @@ public class FAQServiceImpl implements FAQService {
         return mapToDTO(faqRepository.save(faq));
     }
 
-    // ─── DELETE ───────────────────────────────────────────────────────
     @Override
     public void deleteFAQ(Long id) {
         if (!faqRepository.existsById(id)) {
