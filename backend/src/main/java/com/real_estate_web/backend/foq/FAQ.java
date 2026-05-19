@@ -1,4 +1,4 @@
-package real_estate_web.model;
+package com.real_estate_web.backend.foq;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;

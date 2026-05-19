@@ -1,6 +1,6 @@
-package real_estate_web.service;
+package com.real_estate_web.backend.foq;
 
-import real_estate_web.dto.FAQDTO;
+import com.real_estate_web.backend.dto.*;  
 import java.util.List;
 
 public interface FAQService {

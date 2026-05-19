@@ -1,4 +1,4 @@
-package real_estate_web.dto;
+package com.real_estate_web.backend.foq;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

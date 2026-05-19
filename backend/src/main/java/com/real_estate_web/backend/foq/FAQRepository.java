@@ -1,6 +1,6 @@
-package real_estate_web.repository;
+package com.real_estate_web.backend.foq;
 
-import real_estate_web.model.FAQ;
+import com.real_estate_web.backend.model.*;  
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

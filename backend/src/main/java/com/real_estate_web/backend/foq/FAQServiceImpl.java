@@ -1,9 +1,9 @@
-package real_estate_web.service;
+package com.real_estate_web.backend.foq;
 
-import real_estate_web.dto.FAQDTO;
-import real_estate_web.exception.FAQExceptionHandler;
-import real_estate_web.model.FAQ;
-import real_estate_web.repository.FAQRepository;
+import com.real_estate_web.backend.dto.*;        
+import com.real_estate_web.backend.exception.*;  
+import com.real_estate_web.backend.model.*;      
+import com.real_estate_web.backend.repository.*; 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,7 +1,7 @@
-package real_estate_web.controller;
+package com.real_estate_web.backend.foq;
 
-import real_estate_web.dto.FAQDTO;
-import real_estate_web.service.FAQService;
+import com.real_estate_web.backend.dto.*;      
+import com.real_estate_web.backend.service.*;  
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

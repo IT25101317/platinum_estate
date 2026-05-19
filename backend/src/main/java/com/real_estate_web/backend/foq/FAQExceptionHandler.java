@@ -1,4 +1,4 @@
-package real_estate_web.exception;
+package com.real_estate_web.backend.foq;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
